@@ -1171,6 +1171,14 @@ PrefabInstance:
       propertyPath: m_CameraType
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3382172772558661744, guid: 3dfb693ac63758146b8b263ed84b9e7e, type: 3}
+      propertyPath: maxZoom
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3382172772558661744, guid: 3dfb693ac63758146b8b263ed84b9e7e, type: 3}
+      propertyPath: minZoom
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 5669458717793778099, guid: 3dfb693ac63758146b8b263ed84b9e7e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
