@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1312a3620383d554191fc3f2489118dc, type: 3}
+  m_Name: Quest_Template_Part2
+  m_EditorClassIdentifier: 
+  Data:
+    ID: 
+    IS_ACTIVE: 0
+    IS_COMPLETE: 0
+  QuestID: QUEST_ID_EXAMPLE_2
+  IsPassive: 0
+  IsRepeatable: 0
+  SourceOfQuest: Test
+  Title: Example Quest Title 2
+  Description: Example Quest Description 2
+  Objectives: []
+  IsActive: 0
+  IsCompleted: 0
+  Rewards: []
+  BonusRewards: []
+  BonusRewardsEarned: 0
+  MustHaveCompleted: []
+  TriggersNextQuest: []
