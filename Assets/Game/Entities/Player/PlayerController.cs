@@ -5,6 +5,7 @@
 using RPSCore;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -15,7 +16,9 @@ namespace GameCore
     {
         #region Public Properties
 
-
+        public bool CanJump { get; set; } = false;
+        public bool CanDoubleJump { get; set; } = false;
+        public bool CanShootLaser { get; set; } = false;
 
         #endregion
 
@@ -29,7 +32,7 @@ namespace GameCore
         private Transform _transform;
         private Rigidbody _rb;
 
-        private bool _isGrounded = false;
+        private bool _isGrounded = false;        
 
         [SerializeField] private float _groundCheckDistance = 1.05f;
         [SerializeField] private float _jumpPower = 10f;
@@ -40,6 +43,8 @@ namespace GameCore
         // Interactions
         [SerializeField] private Canvas _interactableCanvas;
         [SerializeField] private RectTransform _interactablePromptTransform;
+        [SerializeField] private TextMeshProUGUI _interactablePromptType;
+        [SerializeField] private TextMeshProUGUI _interactablePromptText;
         [SerializeField] private SphereCollider _interactionSphereCollider;
         [SerializeField] private float _interactionRadius = 2f;
         private Dictionary<GameObject, IInteractable> _interactablesInRange = new();
@@ -162,6 +167,11 @@ namespace GameCore
 
         private void Jump(InputAction.CallbackContext context)
         {
+            if (!CanJump)
+            {
+                return;
+            }
+
             if (_isGrounded)
             {
                 _rb.AddForce(Vector3.up * _jumpPower, ForceMode.Impulse);
@@ -175,13 +185,18 @@ namespace GameCore
             {
                 // Get closest interactable and toggle its prompt
                 float smallestDistance = Mathf.Infinity;
-                foreach (var interactcable in _interactablesInRange)
+                foreach (var interactable in _interactablesInRange)
                 {
-                    float distance = Vector3.Distance(interactcable.Key.transform.position, _transform.position);
+                    if (interactable.Key == null)
+                    {
+                        _interactablesInRange.Remove(interactable.Key);
+                        continue;
+                    }
+                    float distance = Vector3.Distance(interactable.Key.transform.position, _transform.position);
                     if (distance < smallestDistance)
                     {
                         smallestDistance = distance;
-                        _nearestInteractable = interactcable.Value;
+                        _nearestInteractable = interactable.Value;
                     }
                 }
             }
@@ -194,14 +209,7 @@ namespace GameCore
             {
                 UpdateInteractionPrompt(false);
             }
-        }
-
-        private void ProcessInteraction()
-        {
-            _nearestInteractable?.Interact();
-            _nearestInteractable = null;
-            UpdateInteractionPrompt(false);
-        }
+        }        
 
         private void UpdateInteractionPrompt(bool state)
         {
@@ -211,11 +219,28 @@ namespace GameCore
                 return;
             }
 
+            _interactablePromptType.SetText(_nearestInteractable.GetInteractionText());
+            _interactablePromptText.SetText(_nearestInteractable.GetItemName());
+
             _interactableCanvas.enabled = true;
             if (_interactablesInRange.Count > 0)
             {
                 _interactableTransform = _interactablesInRange.FirstOrDefault(x => x.Value == _nearestInteractable).Key.transform;
             }            
+        }
+
+        private void ProcessInteraction()
+        {
+            _nearestInteractable?.Interact();
+
+            // Remove the interactable from the _interactablesInRange list
+            if (_nearestInteractable != null)
+            {
+                _interactablesInRange.Remove(_interactablesInRange.FirstOrDefault(x => x.Value == _nearestInteractable).Key);
+            }
+
+            _nearestInteractable = null;
+            UpdateInteractionPrompt(false);
         }
 
         #endregion

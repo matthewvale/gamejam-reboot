@@ -10,10 +10,13 @@ namespace GameCore
     {
         public string CollectableName;
 
-
         #region Interface Methods
 
         public abstract void Interact();
+
+        public abstract string GetInteractionText();
+
+        public abstract string GetItemName();
 
         #endregion
     }

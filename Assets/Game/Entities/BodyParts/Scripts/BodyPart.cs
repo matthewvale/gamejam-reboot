@@ -14,7 +14,8 @@ namespace GameCore
             None,
             Leg,
             Arm,
-            Head
+            Head,
+            Laser
         }
 
         #endregion
@@ -50,6 +51,16 @@ namespace GameCore
         {
             PlayerProgressService.Instance.AddBodyPart(this);
             Destroy(gameObject);
+        }
+
+        public override string GetInteractionText()
+        {
+            return "Collect";
+        }
+
+        public override string GetItemName()
+        {
+            return Type.ToString();
         }
 
         #endregion

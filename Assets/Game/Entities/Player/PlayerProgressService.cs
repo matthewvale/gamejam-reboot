@@ -3,6 +3,7 @@
 /// ------------------------------
 
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -22,10 +23,11 @@ namespace GameCore
 
         private List<BodyPart> _bodyParts = new();
 
-
         [SerializeField] private Canvas _itemCollectedCanvas;
         [SerializeField] private CanvasGroup _itemCollectedCanvasGroup;
         [SerializeField] private TextMeshProUGUI _itemCollectedName;
+
+        [SerializeField] private PlayerController _playerController;
 
         #endregion
 
@@ -48,6 +50,7 @@ namespace GameCore
             {
                 _bodyParts.Add(bodyPart);
                 ShowItemCollectedToast(bodyPart);
+                CheckForAbilityUnlocks(bodyPart);
             }
         }
 
@@ -62,6 +65,28 @@ namespace GameCore
             {
                 LeanTween.alphaCanvas(_itemCollectedCanvasGroup, 0f, 0.5f).setDelay(2f);
             });
+        }
+
+        private void CheckForAbilityUnlocks(BodyPart bodyPart)
+        {
+            switch (bodyPart.Type)
+            {
+                case BodyPart.BodyPartType.Leg:
+                    if (_bodyParts.Count(bp => bp.Type == BodyPart.BodyPartType.Leg) >= 2)
+                    {
+                        _playerController.CanJump = true;
+                    }
+                    break;
+                case BodyPart.BodyPartType.Arm:
+                    // Future ability unlocks for arms would go here
+                    break;
+                case BodyPart.BodyPartType.Head:
+                    // Bring colour back into the environment
+                    break;
+                case BodyPart.BodyPartType.Laser:
+                    _playerController.CanShootLaser = true;
+                    break;
+            }
         }
 
         #endregion
