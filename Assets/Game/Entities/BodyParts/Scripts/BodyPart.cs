@@ -12,8 +12,10 @@ namespace GameCore
         public enum BodyPartType
         {
             None,
-            Leg,
-            Arm,
+            LegL,
+            LegR,
+            ArmL,
+            ArmR,
             Head,
             Laser
         }

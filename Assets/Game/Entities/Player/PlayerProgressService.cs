@@ -51,6 +51,7 @@ namespace GameCore
                 _bodyParts.Add(bodyPart);
                 ShowItemCollectedToast(bodyPart);
                 CheckForAbilityUnlocks(bodyPart);
+                _playerController.EnableBodyPart(bodyPart.Type);
             }
         }
 
@@ -69,20 +70,47 @@ namespace GameCore
 
         private void CheckForAbilityUnlocks(BodyPart bodyPart)
         {
+            bool bothArmsFound = false;
+            bool bothLegsFound = false;
+
             switch (bodyPart.Type)
             {
-                case BodyPart.BodyPartType.Leg:
-                    if (_bodyParts.Count(bp => bp.Type == BodyPart.BodyPartType.Leg) >= 2)
+                case BodyPart.BodyPartType.LegL:
+                    bothLegsFound = _bodyParts.Any(bp => bp.Type == BodyPart.BodyPartType.LegL) &&
+                                         _bodyParts.Any(bp => bp.Type == BodyPart.BodyPartType.LegR);
+                    _playerController.CanJump = bothLegsFound;                    
+                    break;
+
+                case BodyPart.BodyPartType.LegR:
+                    bothLegsFound = _bodyParts.Any(bp => bp.Type == BodyPart.BodyPartType.LegL) &&
+                                         _bodyParts.Any(bp => bp.Type == BodyPart.BodyPartType.LegR);
+                    _playerController.CanJump = bothLegsFound;
+                    break;
+
+                case BodyPart.BodyPartType.ArmL:
+                    _playerController.CanDrag = true;
+                    bothArmsFound = _bodyParts.Any(bp => bp.Type == BodyPart.BodyPartType.ArmL) &&
+                                        _bodyParts.Any(bp => bp.Type == BodyPart.BodyPartType.ArmR);
+                    if (bothArmsFound)
                     {
-                        _playerController.CanJump = true;
+                        _playerController.DragSpeed = 2f;
                     }
                     break;
-                case BodyPart.BodyPartType.Arm:
-                    // Future ability unlocks for arms would go here
+
+                case BodyPart.BodyPartType.ArmR:
+                    _playerController.CanDrag = true;
+                    bothArmsFound = _bodyParts.Any(bp => bp.Type == BodyPart.BodyPartType.ArmL) &&
+                                        _bodyParts.Any(bp => bp.Type == BodyPart.BodyPartType.ArmR);
+                    if (bothArmsFound)
+                    {
+                        _playerController.DragSpeed = 2f;
+                    }
                     break;
+
                 case BodyPart.BodyPartType.Head:
                     // Bring colour back into the environment
                     break;
+
                 case BodyPart.BodyPartType.Laser:
                     _playerController.CanShootLaser = true;
                     break;

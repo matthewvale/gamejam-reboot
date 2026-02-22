@@ -3,11 +3,13 @@
 /// ------------------------------
 
 using RPSCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static GameCore.BodyPart;
 
 namespace GameCore
 {
@@ -18,6 +20,8 @@ namespace GameCore
 
         public bool CanJump { get; set; } = false;
         public bool CanDoubleJump { get; set; } = false;
+        public bool CanDrag { get; set; } = false;
+        public float DragSpeed { get; set; } = 0.5f;
         public bool CanShootLaser { get; set; } = false;
 
         #endregion
@@ -32,7 +36,7 @@ namespace GameCore
         private Transform _transform;
         private Rigidbody _rb;
 
-        private bool _isGrounded = false;        
+        private bool _isGrounded = false;
 
         [SerializeField] private float _groundCheckDistance = 1.05f;
         [SerializeField] private float _jumpPower = 10f;
@@ -50,6 +54,16 @@ namespace GameCore
         private Dictionary<GameObject, IInteractable> _interactablesInRange = new();
         private IInteractable _nearestInteractable;
         private Transform _interactableTransform;
+
+        // Body part management
+        [SerializeField] private GameObject _legL;
+        [SerializeField] private GameObject _legR;
+        [SerializeField] private GameObject _armL;
+        [SerializeField] private GameObject _armR;
+        [SerializeField] private GameObject _head;
+        [SerializeField] private GameObject _laser;
+        [SerializeField] private BoxCollider _boxCollider;
+        [SerializeField] private Vector3 _fullBodyColliderSize = new(1f, 2f, 0.5f);
 
         #endregion
 
@@ -71,6 +85,7 @@ namespace GameCore
             _jumpAction.performed += Jump;
             _interactAction.performed += ctx => ProcessInteraction();
 
+            DisableAllBodyParts();
             UpdateInteractionPrompt(false);
         }
 
@@ -135,11 +150,46 @@ namespace GameCore
 
         #region Public Methods
 
-
+        public void EnableBodyPart(BodyPartType partType)
+        {
+            switch (partType)
+            {
+                case BodyPartType.LegL:
+                    _legL.SetActive(true);
+                    _boxCollider.size = _fullBodyColliderSize;
+                    break;
+                case BodyPartType.LegR:
+                    _legR.SetActive(true);
+                    _boxCollider.size = _fullBodyColliderSize;
+                    break;
+                case BodyPartType.ArmL:
+                    _armL.SetActive(true);
+                    break;
+                case BodyPartType.ArmR:
+                    _armR.SetActive(true);
+                    break;
+                case BodyPartType.Head:
+                    _head.SetActive(true);
+                    break;
+                case BodyPartType.Laser:
+                    _laser.SetActive(true);
+                    break;
+            }
+        }
 
         #endregion
 
         #region Private Methods
+
+        private void DisableAllBodyParts()
+        {
+            _legL.SetActive(false);
+            _legR.SetActive(false);
+            _armL.SetActive(false);
+            _armR.SetActive(false);
+            _head.SetActive(false);
+            //_laser.SetActive(false);
+        }
 
         private void HandleMovement()
         {
@@ -162,7 +212,7 @@ namespace GameCore
             {
                 Quaternion targetRotation = Quaternion.LookRotation(moveDirection, Vector3.up);
                 _rb.MoveRotation(targetRotation);
-            }                        
+            }
         }
 
         private void Jump(InputAction.CallbackContext context)
@@ -209,7 +259,7 @@ namespace GameCore
             {
                 UpdateInteractionPrompt(false);
             }
-        }        
+        }
 
         private void UpdateInteractionPrompt(bool state)
         {
@@ -226,7 +276,7 @@ namespace GameCore
             if (_interactablesInRange.Count > 0)
             {
                 _interactableTransform = _interactablesInRange.FirstOrDefault(x => x.Value == _nearestInteractable).Key.transform;
-            }            
+            }
         }
 
         private void ProcessInteraction()
