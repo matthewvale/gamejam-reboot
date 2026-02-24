@@ -1,6 +1,6 @@
 ﻿<Solution>
   <Project Path="RPSCore.csproj" />
-  <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="GameCore.csproj" />
   <Project Path="RPSEditor.csproj" />
   <Project Path="RPSCore.Steamworks.csproj" />
 </Solution>
