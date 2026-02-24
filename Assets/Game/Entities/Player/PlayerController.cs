@@ -3,7 +3,6 @@
 /// ------------------------------
 
 using RPSCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -40,7 +39,9 @@ namespace GameCore
 
         [SerializeField] private float _groundCheckDistance = 1.05f;
         [SerializeField] private float _jumpPower = 10f;
+        [SerializeField] private float _acceleration = 10f;
         [SerializeField] private float _moveSpeed = 2f;
+        [SerializeField] private float _rotationSpeed = 1f;
         [SerializeField] private float _sprintSpeedMultiplier = 1.5f;
         [SerializeField] private LayerMask _groundMask;
 
@@ -56,6 +57,7 @@ namespace GameCore
         private Transform _interactableTransform;
 
         // Body part management
+        [SerializeField] private ParticleSystem[] _bodyVFX;
         [SerializeField] private GameObject _legL;
         [SerializeField] private GameObject _legR;
         [SerializeField] private GameObject _armL;
@@ -70,7 +72,7 @@ namespace GameCore
 
         #region Unity Flow
 
-        private void Start()
+        private void Awake()
         {
             _transform = transform;
             _camera = CameraControllerV2.Instance;
@@ -89,14 +91,15 @@ namespace GameCore
             UpdateInteractionPrompt(false);
         }
 
+        private void OnEnable()
+        {
+            // This is not how I would usually do it, but for the sake of time...
+            _transform.position = GameObject.Find("PlayerSpawnPoint").transform.position;
+        }
+
         private void OnDestroy()
         {
             _jumpAction.performed -= Jump;
-        }
-
-        private void Update()
-        {
-            HandleMovement();
         }
 
         private void FixedUpdate()
@@ -104,6 +107,8 @@ namespace GameCore
             // Check if grounded
             Debug.DrawRay(_transform.position, Vector3.down * _groundCheckDistance, Color.red);
             _isGrounded = Physics.Raycast(_transform.position, Vector3.down, _groundCheckDistance, _groundMask);
+
+            HandleMovement();
         }
 
         private void LateUpdate()
@@ -152,6 +157,11 @@ namespace GameCore
 
         public void EnableBodyPart(BodyPartType partType)
         {
+            for (int i = 0; i < _bodyVFX.Length; i++)
+            {
+                _bodyVFX[i].Stop();
+            }
+
             switch (partType)
             {
                 case BodyPartType.LegL:
@@ -205,13 +215,28 @@ namespace GameCore
 
             // Move direction, camera relative
             Vector3 moveDirection = camForward * moveInput.y + camRight * moveInput.x;
-            _rb.MovePosition(_rb.position + moveDirection * _moveSpeed * Time.fixedDeltaTime);
+            moveDirection.Normalize();
+
+            Vector3 targetVel = moveDirection * _moveSpeed;
+
+            Vector3 smoothedMove = Vector3.Lerp(
+                _rb.linearVelocity,
+                targetVel,
+                _acceleration * Time.fixedDeltaTime
+            );
+
+            //_rb.linearVelocity = smoothedMove;
+
+            _rb.MovePosition(_rb.position + smoothedMove * _moveSpeed * Time.fixedDeltaTime);
 
             // Rotation is handled by the camera, so we just need to ensure the rigidbody's rotation matches the transform's rotation
             if (moveDirection != Vector3.zero)
             {
                 Quaternion targetRotation = Quaternion.LookRotation(moveDirection, Vector3.up);
-                _rb.MoveRotation(targetRotation);
+
+                Quaternion newRot = Quaternion.Slerp(_rb.rotation, targetRotation, _rotationSpeed * Time.fixedDeltaTime);
+
+                _rb.MoveRotation(newRot);
             }
         }
 

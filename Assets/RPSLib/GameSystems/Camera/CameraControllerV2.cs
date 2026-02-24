@@ -294,11 +294,13 @@ namespace RPSCore
             _mouseDelta = Mouse.current.delta.ReadValue() * Time.unscaledDeltaTime;
 
             // Mouse middle button
-            if (_middleMouseClickedAction.IsPressed() || _rightMouseClickedAction.IsPressed())
-            {
-                _localRot.x += _mouseDelta.x * rotationSensitivity;
-                _localRot.y -= _mouseDelta.y * rotationSensitivity;
-            }
+            //if (_middleMouseClickedAction.IsPressed() || _rightMouseClickedAction.IsPressed())
+            //{
+            //    _localRot.x += _mouseDelta.x * rotationSensitivity;
+            //    _localRot.y -= _mouseDelta.y * rotationSensitivity;
+            //}
+            _localRot.x += _mouseDelta.x * rotationSensitivity;
+            _localRot.y -= _mouseDelta.y * rotationSensitivity;
 
             // Mouse scroll wheel
             float scrollAmount = _mouseScrollWheelAction.ReadValue<Vector2>().y;
