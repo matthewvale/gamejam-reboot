@@ -4306,7 +4306,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3382172772558661744, guid: 3dfb693ac63758146b8b263ed84b9e7e, type: 3}
       propertyPath: minZoom
-      value: 8
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3382172772558661744, guid: 3dfb693ac63758146b8b263ed84b9e7e, type: 3}
+      propertyPath: moveSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3382172772558661744, guid: 3dfb693ac63758146b8b263ed84b9e7e, type: 3}
+      propertyPath: maxMoveSpeed
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 3382172772558661744, guid: 3dfb693ac63758146b8b263ed84b9e7e, type: 3}
+      propertyPath: orbitDampening
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 3382172772558661744, guid: 3dfb693ac63758146b8b263ed84b9e7e, type: 3}
+      propertyPath: cameraDriftAmount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3382172772558661744, guid: 3dfb693ac63758146b8b263ed84b9e7e, type: 3}
+      propertyPath: movementSmoothness
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3382172772558661744, guid: 3dfb693ac63758146b8b263ed84b9e7e, type: 3}
+      propertyPath: startingRotation.x
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 3382172772558661744, guid: 3dfb693ac63758146b8b263ed84b9e7e, type: 3}
+      propertyPath: zoomDistanceMultiplier
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5669458717793778099, guid: 3dfb693ac63758146b8b263ed84b9e7e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -10182,7 +10210,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: -32}
-  m_SizeDelta: {x: 600, y: 130}
+  m_SizeDelta: {x: 600, y: 200}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1335788230
 MonoBehaviour:
@@ -10200,7 +10228,7 @@ MonoBehaviour:
     m_Left: 0
     m_Right: 0
     m_Top: 8
-    m_Bottom: 8
+    m_Bottom: 32
   m_ChildAlignment: 4
   m_Spacing: 0
   m_ChildForceExpandWidth: 1
@@ -10223,7 +10251,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.100000024, g: 1, b: 0.40000015, a: 0.5019608}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.5019608}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -12950,8 +12978,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 26
-  m_fontSizeBase: 26
+  m_fontSize: 34
+  m_fontSizeBase: 34
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
