@@ -34,7 +34,8 @@ namespace GameCore
 
         public void StartGame()
         {
-            SceneManagement.LoadScene(SceneNameManager.GAME, UnityEngine.SceneManagement.LoadSceneMode.Single);
+            SceneManagement.LoadScene(SceneNameManager.GAME, UnityEngine.SceneManagement.LoadSceneMode.Additive);
+            RPSLib.SceneManagement.UnloadScene(SceneNameManager.MAIN_MENU);
         }
 
         public void ShowPanel(Canvas canvas)
