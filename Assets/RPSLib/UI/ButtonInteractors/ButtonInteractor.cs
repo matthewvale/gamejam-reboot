@@ -50,7 +50,7 @@ namespace RPSCore
                 return;
             }
 
-            CursorService.Instance.SetCursorType(CursorService.CursorType.UI_HOVER);
+            CursorService.Instance.SetCursorType(CursorService.CursorType.UI_HOVER, CursorLockMode.None);
             AudioManager.Instance.PlayUISound(AudioManager.UIClipType.BUTTON_HOVER, true);
         }
 
@@ -77,7 +77,7 @@ namespace RPSCore
 
         public virtual void OnPointerExit(PointerEventData eventData)
         {
-            CursorService.Instance.SetCursorType(CursorService.CursorType.MAIN);
+            CursorService.Instance.SetCursorType(CursorService.CursorType.MAIN, CursorLockMode.None);
         }
 
         #endregion
