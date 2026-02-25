@@ -13,7 +13,7 @@ namespace RPSCore
     {
         private string gameName;
         private string year;
-        private const float _loadMainMenuAfter = 12f;
+        private const float _loadMainMenuAfter = 3f;
 
         public TextMeshProUGUI copyrightText;
 
