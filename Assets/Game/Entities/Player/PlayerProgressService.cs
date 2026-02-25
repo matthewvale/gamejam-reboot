@@ -2,10 +2,14 @@
 /// Original Author: Matthew Vale
 /// ------------------------------
 
+using RPSCore;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 namespace GameCore
 {
@@ -27,7 +31,16 @@ namespace GameCore
         [SerializeField] private CanvasGroup _itemCollectedCanvasGroup;
         [SerializeField] private TextMeshProUGUI _itemCollectedName;
 
+        [SerializeField] private List<GameObject> _levelAreaParents;
+        private int _currentAreaIndex = 0;
+        private WaitForSeconds _levelAreaLoadTime = new(3f);
+        //private Coroutine _levelAreaLoadCoroutine;
+
         [SerializeField] private PlayerController _playerController;
+
+        [SerializeField] private Volume _postProcessingVolume;
+        //private VolumeParameter<float> _colourSaturationParameter;
+        private ColorAdjustments _colorAdjustments;
 
         #endregion
 
@@ -38,6 +51,7 @@ namespace GameCore
         {
             Instance = this;
             _itemCollectedCanvasGroup.alpha = 0f;
+            _postProcessingVolume.profile.TryGet(out _colorAdjustments);
         }
 
         #endregion
@@ -51,8 +65,14 @@ namespace GameCore
                 _bodyParts.Add(bodyPart);
                 ShowItemCollectedToast(bodyPart);
                 CheckForAbilityUnlocks(bodyPart);
-                _playerController.EnableBodyPart(bodyPart.Type);
+                LoadNextArea();
             }
+        }
+
+        public void LoadNextArea()
+        {
+            //_levelAreaLoadCoroutine = 
+            StartCoroutine(LoadLevel());
         }
 
         #endregion
@@ -78,7 +98,7 @@ namespace GameCore
                 case BodyPart.BodyPartType.LegL:
                     bothLegsFound = _bodyParts.Any(bp => bp.Type == BodyPart.BodyPartType.LegL) &&
                                          _bodyParts.Any(bp => bp.Type == BodyPart.BodyPartType.LegR);
-                    _playerController.CanJump = bothLegsFound;                    
+                    _playerController.CanJump = bothLegsFound;
                     break;
 
                 case BodyPart.BodyPartType.LegR:
@@ -115,6 +135,22 @@ namespace GameCore
                     _playerController.CanShootLaser = true;
                     break;
             }
+        }
+
+        private IEnumerator LoadLevel()
+        {
+            SceneFadeService.Instance.TriggerFade($"Re-attaching part: {_bodyParts[^1].Type}", 2f, 3f);
+            yield return _levelAreaLoadTime;
+
+            _currentAreaIndex++;
+            for (int i = 0; i < _levelAreaParents.Count; i++)
+            {
+                _levelAreaParents[i].SetActive(i == _currentAreaIndex);
+            }
+
+            _playerController.EnableBodyPart(_bodyParts[^1].Type);
+
+            _colorAdjustments.saturation.value += 200 / _levelAreaParents.Count;
         }
 
         #endregion

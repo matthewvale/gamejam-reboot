@@ -33,10 +33,11 @@ namespace GameCore
 
         private CameraControllerV2 _camera;
         private Transform _transform;
-        private Rigidbody _rb;
+        private Rigidbody _rigidBody;
 
         private bool _isGrounded = false;
 
+        [SerializeField] private Transform _playerSpawnPoint;
         [SerializeField] private float _groundCheckDistance = 1.05f;
         [SerializeField] private float _jumpPower = 10f;
         [SerializeField] private float _acceleration = 10f;
@@ -67,6 +68,9 @@ namespace GameCore
         [SerializeField] private BoxCollider _boxCollider;
         [SerializeField] private Vector3 _fullBodyColliderSize = new(1f, 2f, 0.5f);
 
+        // Happy state visualizer
+        [SerializeField] private GameObject[] _happyStates;
+
         #endregion
 
 
@@ -77,7 +81,7 @@ namespace GameCore
             _transform = transform;
             _camera = CameraControllerV2.Instance;
             _camera.StartFollowingObject(transform);
-            _rb = GetComponent<Rigidbody>();
+            _rigidBody = GetComponent<Rigidbody>();
             _interactionSphereCollider.radius = _interactionRadius;
 
             _moveAction = InputSystem.actions.FindAction(InputActionConstants.DirectionalMove);
@@ -88,13 +92,16 @@ namespace GameCore
             _interactAction.performed += ctx => ProcessInteraction();
 
             DisableAllBodyParts();
+            EnableHappyState(0);
             UpdateInteractionPrompt(false);
+
+            CursorService.Instance?.SetCursorType(CursorService.CursorType.DEFEND, CursorLockMode.Locked);
         }
 
         private void OnEnable()
         {
             // This is not how I would usually do it, but for the sake of time...
-            _transform.position = GameObject.Find("PlayerSpawnPoint").transform.position;
+            _rigidBody.position = _playerSpawnPoint.position;
         }
 
         private void OnDestroy()
@@ -132,6 +139,11 @@ namespace GameCore
                     }
                 }
             }
+
+            if (other.CompareTag("Respawn"))
+            {
+                _rigidBody.position = _playerSpawnPoint.position;
+            }
         }
 
         private void OnTriggerExit(Collider other)
@@ -166,23 +178,29 @@ namespace GameCore
             {
                 case BodyPartType.LegL:
                     _legL.SetActive(true);
+                    EnableHappyState(1);
                     _boxCollider.size = _fullBodyColliderSize;
                     break;
                 case BodyPartType.LegR:
                     _legR.SetActive(true);
+                    EnableHappyState(2);
                     _boxCollider.size = _fullBodyColliderSize;
                     break;
                 case BodyPartType.ArmL:
+                    EnableHappyState(3);
                     _armL.SetActive(true);
                     break;
                 case BodyPartType.ArmR:
+                    EnableHappyState(4);
                     _armR.SetActive(true);
                     break;
                 case BodyPartType.Head:
+                    EnableHappyState(5);
                     _head.SetActive(true);
                     break;
                 case BodyPartType.Laser:
                     _laser.SetActive(true);
+                    CursorService.Instance.SetCursorType(CursorService.CursorType.ATTACK, CursorLockMode.Locked);
                     break;
             }
         }
@@ -199,6 +217,14 @@ namespace GameCore
             _armR.SetActive(false);
             _head.SetActive(false);
             //_laser.SetActive(false);
+        }
+
+        private void EnableHappyState(int index)
+        {
+            for (int i = 0; i < _happyStates.Length; i++)
+            {
+                _happyStates[i].SetActive(i == index);
+            }
         }
 
         private void HandleMovement()
@@ -220,23 +246,23 @@ namespace GameCore
             Vector3 targetVel = moveDirection * _moveSpeed;
 
             Vector3 smoothedMove = Vector3.Lerp(
-                _rb.linearVelocity,
+                _rigidBody.linearVelocity,
                 targetVel,
                 _acceleration * Time.fixedDeltaTime
             );
 
             //_rb.linearVelocity = smoothedMove;
 
-            _rb.MovePosition(_rb.position + smoothedMove * _moveSpeed * Time.fixedDeltaTime);
+            _rigidBody.MovePosition(_rigidBody.position + smoothedMove * _moveSpeed * Time.fixedDeltaTime);
 
             // Rotation is handled by the camera, so we just need to ensure the rigidbody's rotation matches the transform's rotation
             if (moveDirection != Vector3.zero)
             {
                 Quaternion targetRotation = Quaternion.LookRotation(moveDirection, Vector3.up);
 
-                Quaternion newRot = Quaternion.Slerp(_rb.rotation, targetRotation, _rotationSpeed * Time.fixedDeltaTime);
+                Quaternion newRot = Quaternion.Slerp(_rigidBody.rotation, targetRotation, _rotationSpeed * Time.fixedDeltaTime);
 
-                _rb.MoveRotation(newRot);
+                _rigidBody.MoveRotation(newRot);
             }
         }
 
@@ -249,7 +275,7 @@ namespace GameCore
 
             if (_isGrounded)
             {
-                _rb.AddForce(Vector3.up * _jumpPower, ForceMode.Impulse);
+                _rigidBody.AddForce(Vector3.up * _jumpPower, ForceMode.Impulse);
             }
         }
 
@@ -315,7 +341,7 @@ namespace GameCore
             }
 
             _nearestInteractable = null;
-            UpdateInteractionPrompt(false);
+            ToggleNearestInteractablePrompt();
         }
 
         #endregion
