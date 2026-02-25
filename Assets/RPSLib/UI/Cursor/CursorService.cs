@@ -45,13 +45,13 @@ namespace RPSCore
                 return;
             }
 
-            SetCursorType(CursorType.MAIN);
+            SetCursorType(CursorType.MAIN, CursorLockMode.None);
         }
         #endregion
 
         #region Public Methods
 
-        public void SetCursorType(CursorType targetCursor)
+        public void SetCursorType(CursorType targetCursor, CursorLockMode lockMode, bool hidden = false)
         {
             switch (targetCursor)
             {
@@ -74,6 +74,9 @@ namespace RPSCore
                     Cursor.SetCursor(main, hotSpot, cursorMode);
                     break;
             }
+
+            Cursor.lockState = lockMode;
+            Cursor.visible = !hidden;
         }
 
         #endregion
