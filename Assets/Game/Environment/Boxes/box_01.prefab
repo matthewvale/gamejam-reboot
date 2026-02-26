@@ -68,6 +68,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: box_01
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: bc26376dd5b9cfb42abce4c6ee6800c0, type: 3}
+      propertyPath: m_TagString
+      value: Interactable
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -78,6 +82,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: bc26376dd5b9cfb42abce4c6ee6800c0, type: 3}
       insertIndex: -1
       addedObject: {fileID: 993175507519434999}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: bc26376dd5b9cfb42abce4c6ee6800c0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -5939879698629050259}
   m_SourcePrefab: {fileID: 100100000, guid: bc26376dd5b9cfb42abce4c6ee6800c0, type: 3}
 --- !u!1 &699792303905539500 stripped
 GameObject:
@@ -92,7 +99,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 699792303905539500}
   serializedVersion: 5
-  m_Mass: 1
+  m_Mass: 2
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -132,3 +139,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-5939879698629050259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 699792303905539500}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 105a781336fed0c49a9ffad3991eff88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: GameCore::GameCore.DraggableObject
+  CollectableName: Box
+  SingleUse: 0
+  Draggable: 1
+  _rigidBody: {fileID: 4998355958044360408}
+  _dragSpeed: 100
+  _maxDragVelocity: 2
+  _dragDistanceMin: 1.5

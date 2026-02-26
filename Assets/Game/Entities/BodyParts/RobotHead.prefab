@@ -157,6 +157,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameCore.BodyPart
   CollectableName: Head
   Type: 5
+  SingleUse: 1
 --- !u!1001 &6468248293517865022
 PrefabInstance:
   m_ObjectHideFlags: 0

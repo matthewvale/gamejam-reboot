@@ -55,6 +55,7 @@ namespace GameCore
         [SerializeField] private float _interactionRadius = 2f;
         private Dictionary<GameObject, IInteractable> _interactablesInRange = new();
         private IInteractable _nearestInteractable;
+        private IInteractable _currentlySelectedInteractable;
         private Transform _interactableTransform;
 
         // Body part management
@@ -89,13 +90,14 @@ namespace GameCore
             _interactAction = InputSystem.actions.FindAction(InputActionConstants.InteractKey);
 
             _jumpAction.performed += Jump;
-            _interactAction.performed += ctx => ProcessInteraction();
+            _interactAction.started += ctx => StartInteraction();
+            _interactAction.canceled += ctx => StopInteraction();
 
             DisableAllBodyParts();
-            EnableHappyState(0);
+            SetHappyState(0);
             UpdateInteractionPrompt(false);
 
-            CursorService.Instance?.SetCursorType(CursorService.CursorType.DEFEND, CursorLockMode.Locked);
+            CursorService.Instance.SetCursorType(CursorService.CursorType.DEFEND, CursorLockMode.Locked);
         }
 
         private void OnEnable()
@@ -178,30 +180,41 @@ namespace GameCore
             {
                 case BodyPartType.LegL:
                     _legL.SetActive(true);
-                    EnableHappyState(1);
                     _boxCollider.size = _fullBodyColliderSize;
                     break;
                 case BodyPartType.LegR:
                     _legR.SetActive(true);
-                    EnableHappyState(2);
                     _boxCollider.size = _fullBodyColliderSize;
                     break;
                 case BodyPartType.ArmL:
-                    EnableHappyState(3);
+                    CanDrag = true;
                     _armL.SetActive(true);
                     break;
                 case BodyPartType.ArmR:
-                    EnableHappyState(4);
+                    CanDrag = true;
                     _armR.SetActive(true);
                     break;
                 case BodyPartType.Head:
-                    EnableHappyState(5);
                     _head.SetActive(true);
                     break;
                 case BodyPartType.Laser:
+                    CanShootLaser = true;
                     _laser.SetActive(true);
                     CursorService.Instance.SetCursorType(CursorService.CursorType.ATTACK, CursorLockMode.Locked);
                     break;
+            }
+        }
+
+        public void ResetPosition()
+        {
+            _rigidBody.position = _playerSpawnPoint.position;
+        }
+
+        public void SetHappyState(int index)
+        {
+            for (int i = 0; i < _happyStates.Length; i++)
+            {
+                _happyStates[i].SetActive(i == index);
             }
         }
 
@@ -217,14 +230,6 @@ namespace GameCore
             _armR.SetActive(false);
             _head.SetActive(false);
             //_laser.SetActive(false);
-        }
-
-        private void EnableHappyState(int index)
-        {
-            for (int i = 0; i < _happyStates.Length; i++)
-            {
-                _happyStates[i].SetActive(i == index);
-            }
         }
 
         private void HandleMovement()
@@ -330,18 +335,38 @@ namespace GameCore
             }
         }
 
-        private void ProcessInteraction()
+        private void StartInteraction()
         {
-            _nearestInteractable?.Interact();
-
-            // Remove the interactable from the _interactablesInRange list
-            if (_nearestInteractable != null)
+            if (_nearestInteractable == null)
             {
-                _interactablesInRange.Remove(_interactablesInRange.FirstOrDefault(x => x.Value == _nearestInteractable).Key);
+                return;
             }
 
-            _nearestInteractable = null;
-            ToggleNearestInteractablePrompt();
+            if (_nearestInteractable.IsDraggable && !CanDrag)
+            {
+                return;
+            }
+
+            _nearestInteractable?.StartInteraction(_transform);
+            _currentlySelectedInteractable = _nearestInteractable;
+
+            if (_nearestInteractable.IsSingleUse)
+            {
+                // Remove the interactable from the _interactablesInRange list
+                if (_nearestInteractable != null)
+                {
+                    _interactablesInRange.Remove(_interactablesInRange.FirstOrDefault(x => x.Value == _nearestInteractable).Key);
+                }
+
+                _nearestInteractable = null;
+                ToggleNearestInteractablePrompt();
+            }
+        }
+
+        private void StopInteraction()
+        {
+            _currentlySelectedInteractable?.StopInteraction();
+            _currentlySelectedInteractable = null;
         }
 
         #endregion

@@ -1,7 +1,8 @@
+using UnityEngine;
+
 /// ------------------------------
 /// Original Author: Matthew Vale
 /// ------------------------------
-
 namespace GameCore
 {
     public class BodyPart : Collectable
@@ -18,6 +19,20 @@ namespace GameCore
             ArmR,
             Head,
             Laser
+        }
+
+        public bool SingleUse = false;
+        public override bool IsSingleUse
+        {
+            get => SingleUse;
+            set => SingleUse = value;
+        }
+
+        public bool Draggable = false;
+        public override bool IsDraggable
+        {
+            get => Draggable;
+            set => Draggable = value;
         }
 
         #endregion
@@ -47,12 +62,16 @@ namespace GameCore
 
         #endregion
 
-        #region Collectable Interface Methods
+        #region IInteractable Interface Methods
 
-        public override void Interact()
+        public override void StartInteraction(Transform source)
         {
             PlayerProgressService.Instance.AddBodyPart(this);
             Destroy(gameObject);
+        }
+
+        public override void StopInteraction()
+        {
         }
 
         public override string GetInteractionText()

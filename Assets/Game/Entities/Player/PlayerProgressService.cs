@@ -50,8 +50,10 @@ namespace GameCore
         private void Awake()
         {
             Instance = this;
+
             _itemCollectedCanvasGroup.alpha = 0f;
             _postProcessingVolume.profile.TryGet(out _colorAdjustments);
+            _levelAreaParents[0].SetActive(true);
         }
 
         #endregion
@@ -149,6 +151,8 @@ namespace GameCore
             }
 
             _playerController.EnableBodyPart(_bodyParts[^1].Type);
+            _playerController.SetHappyState(_currentAreaIndex);
+            _playerController.ResetPosition();
 
             _colorAdjustments.saturation.value += 200 / _levelAreaParents.Count;
         }

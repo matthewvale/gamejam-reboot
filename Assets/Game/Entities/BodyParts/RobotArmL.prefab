@@ -50,6 +50,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameCore.BodyPart
   CollectableName: Left Arm
   Type: 3
+  SingleUse: 1
 --- !u!135 &1687884580817914963
 SphereCollider:
   m_ObjectHideFlags: 0

@@ -157,6 +157,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameCore.BodyPart
   CollectableName: Right Leg
   Type: 2
+  SingleUse: 1
 --- !u!1001 &2683215423678927606
 PrefabInstance:
   m_ObjectHideFlags: 0

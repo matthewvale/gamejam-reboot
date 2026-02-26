@@ -155,3 +155,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameCore.BodyPart
   CollectableName: Laser
   Type: 4
+  SingleUse: 1
