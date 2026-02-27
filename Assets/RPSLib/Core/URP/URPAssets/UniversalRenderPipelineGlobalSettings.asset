@@ -29,6 +29,7 @@ MonoBehaviour:
   m_StripUnusedVariants: 0
   m_StripScreenCoordOverrideVariants: 1
   supportRuntimeDebugDisplay: 0
+  m_EnableRenderGraph: 0
   m_Settings:
     m_SettingsList:
       m_List:
@@ -69,6 +70,7 @@ MonoBehaviour:
       - rid: 5515678472500674562
     m_RuntimeSettings:
       m_List:
+      - rid: 5266802579956563970
       - rid: 5266802579956563971
       - rid: 5266802579956563972
       - rid: 5266802579956563974
@@ -105,10 +107,13 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 5266802579956563970
       type: {class: RenderGraphSettings, ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.Runtime}
       data:
         m_Version: 0
+        m_EnableRenderCompatibilityMode: 0
     - rid: 5266802579956563971
       type: {class: UniversalRenderPipelineRuntimeXRResources, ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.Runtime}
       data:
