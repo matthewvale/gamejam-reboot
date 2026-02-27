@@ -122,6 +122,7 @@ namespace GameCore
 
         private void LateUpdate()
         {
+            UpdateNearestInteractablePrompt();
             if (_interactableTransform && _interactableCanvas.enabled)
             {
                 // Convert world position of interactable to screen point and set                
@@ -135,10 +136,7 @@ namespace GameCore
             {
                 if (other.TryGetComponent(out IInteractable interactable))
                 {
-                    if (_interactablesInRange.TryAdd(other.gameObject, interactable))
-                    {
-                        ToggleNearestInteractablePrompt();
-                    }
+                    _interactablesInRange.TryAdd(other.gameObject, interactable);
                 }
             }
 
@@ -156,9 +154,8 @@ namespace GameCore
                 {
                     if (interactableObject.Key == other.gameObject)
                     {
+                        interactableObject.Value.StopInteraction();
                         _interactablesInRange.Remove(interactableObject.Key);
-                        UpdateInteractionPrompt(false);
-                        ToggleNearestInteractablePrompt();
                         break;
                     }
                 }
@@ -284,7 +281,7 @@ namespace GameCore
             }
         }
 
-        private void ToggleNearestInteractablePrompt()
+        private void UpdateNearestInteractablePrompt()
         {
             _nearestInteractable = null;
             if (_interactablesInRange.Count > 0)
@@ -319,7 +316,7 @@ namespace GameCore
 
         private void UpdateInteractionPrompt(bool state)
         {
-            if (!state)
+            if (!state || _nearestInteractable == null)
             {
                 _interactableCanvas.enabled = false;
                 return;
@@ -359,7 +356,6 @@ namespace GameCore
                 }
 
                 _nearestInteractable = null;
-                ToggleNearestInteractablePrompt();
             }
         }
 
