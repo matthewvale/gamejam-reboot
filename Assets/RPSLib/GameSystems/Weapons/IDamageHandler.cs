@@ -13,11 +13,7 @@ namespace RPSCore
 
         public float GetHealth();
 
-        public float GetSecondaryHealth();
-
         public float GetMaxHealth();
-
-        public float GetThreatLevel();
     }
 
     public struct DamageData
