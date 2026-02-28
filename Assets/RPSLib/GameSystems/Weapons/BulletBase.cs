@@ -1,12 +1,14 @@
-/* Author:		Matthew Vale
- * Role:		Lead Game Developer
- * Company:		Red Phoenix Studios
-*/
+/// ------------------------------
+/// Original Author: Matthew Vale
+/// ------------------------------
+
 using UnityEngine;
 
-namespace RPSCore {
+namespace RPSCore
+{
 
-    public abstract class BulletBase : MonoBehaviour {
+    public abstract class BulletBase : MonoBehaviour
+    {
 
         public abstract float Damage { get; set; }
 
