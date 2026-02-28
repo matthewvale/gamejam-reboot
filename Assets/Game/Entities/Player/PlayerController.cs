@@ -40,6 +40,7 @@ namespace GameCore
         [SerializeField] private Transform _playerSpawnPoint;
         [SerializeField] private float _groundCheckDistance = 1.05f;
         [SerializeField] private float _jumpPower = 10f;
+        private float _currentJumpPower = 0f;
         [SerializeField] private float _acceleration = 10f;
         [SerializeField] private float _moveSpeed = 2f;
         [SerializeField] private float _rotationSpeed = 1f;
@@ -218,10 +219,15 @@ namespace GameCore
 
         public void SetCanJump()
         {
+            CanJump = true;
             _legCount++;
-            if (_legCount >= 2)
+            if (_legCount == 1)
             {
-                CanJump = true;
+                _currentJumpPower = _jumpPower / 2f;
+            }
+            else
+            {
+                _currentJumpPower = _jumpPower;
             }
         }
 
@@ -287,7 +293,7 @@ namespace GameCore
 
             if (_isGrounded)
             {
-                _rigidBody.AddForce(Vector3.up * _jumpPower, ForceMode.Impulse);
+                _rigidBody.AddForce(Vector3.up * _currentJumpPower, ForceMode.Impulse);
             }
         }
 
