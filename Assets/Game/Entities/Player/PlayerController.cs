@@ -68,6 +68,7 @@ namespace GameCore
         [SerializeField] private GameObject _laser;
         [SerializeField] private BoxCollider _boxCollider;
         [SerializeField] private Vector3 _fullBodyColliderSize = new(1f, 2f, 0.5f);
+        private int _legCount = 0;
 
         // Happy state visualizer
         [SerializeField] private GameObject[] _happyStates;
@@ -212,6 +213,15 @@ namespace GameCore
             for (int i = 0; i < _happyStates.Length; i++)
             {
                 _happyStates[i].SetActive(i == index);
+            }
+        }
+
+        public void SetCanJump()
+        {
+            _legCount++;
+            if (_legCount >= 2)
+            {
+                CanJump = true;
             }
         }
 

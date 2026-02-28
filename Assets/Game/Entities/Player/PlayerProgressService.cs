@@ -34,12 +34,10 @@ namespace GameCore
         [SerializeField] private List<GameObject> _levelAreaParents;
         private int _currentAreaIndex = 0;
         private WaitForSeconds _levelAreaLoadTime = new(3f);
-        //private Coroutine _levelAreaLoadCoroutine;
 
         [SerializeField] private PlayerController _playerController;
 
         [SerializeField] private Volume _postProcessingVolume;
-        //private VolumeParameter<float> _colourSaturationParameter;
         private ColorAdjustments _colorAdjustments;
 
         #endregion
@@ -53,6 +51,11 @@ namespace GameCore
 
             _itemCollectedCanvasGroup.alpha = 0f;
             _postProcessingVolume.profile.TryGet(out _colorAdjustments);
+
+            for (int i = 0; i < _levelAreaParents.Count; i++)
+            {
+                _levelAreaParents[i].SetActive(false);
+            }
             _levelAreaParents[0].SetActive(true);
         }
 
@@ -93,20 +96,15 @@ namespace GameCore
         private void CheckForAbilityUnlocks(BodyPart bodyPart)
         {
             bool bothArmsFound = false;
-            bool bothLegsFound = false;
 
             switch (bodyPart.Type)
             {
                 case BodyPart.BodyPartType.LegL:
-                    bothLegsFound = _bodyParts.Any(bp => bp.Type == BodyPart.BodyPartType.LegL) &&
-                                         _bodyParts.Any(bp => bp.Type == BodyPart.BodyPartType.LegR);
-                    _playerController.CanJump = bothLegsFound;
+                    _playerController.SetCanJump();
                     break;
 
                 case BodyPart.BodyPartType.LegR:
-                    bothLegsFound = _bodyParts.Any(bp => bp.Type == BodyPart.BodyPartType.LegL) &&
-                                         _bodyParts.Any(bp => bp.Type == BodyPart.BodyPartType.LegR);
-                    _playerController.CanJump = bothLegsFound;
+                    _playerController.SetCanJump();
                     break;
 
                 case BodyPart.BodyPartType.ArmL:
