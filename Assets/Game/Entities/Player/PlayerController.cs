@@ -30,6 +30,7 @@ namespace GameCore
         private InputAction _moveAction;
         private InputAction _jumpAction;
         private InputAction _interactAction;
+        private InputAction _shootAction;
 
         private CameraControllerV2 _camera;
         private Transform _transform;
@@ -74,6 +75,10 @@ namespace GameCore
         // Happy state visualizer
         [SerializeField] private GameObject[] _happyStates;
 
+        // Weapons
+        [SerializeField] private PlayerWeaponController _weaponController;
+        private bool _isShooting = false;
+
         #endregion
 
 
@@ -94,6 +99,10 @@ namespace GameCore
             _jumpAction.performed += Jump;
             _interactAction.started += ctx => StartInteraction();
             _interactAction.canceled += ctx => StopInteraction();
+
+            _shootAction = InputSystem.actions.FindAction(InputActionConstants.LMB);
+            _shootAction.started += ctx => StartShooting();
+            _shootAction.canceled += ctx => StopShooting();
 
             DisableAllBodyParts();
             SetHappyState(0);
@@ -120,6 +129,10 @@ namespace GameCore
             _isGrounded = Physics.Raycast(_transform.position, Vector3.down, _groundCheckDistance, _groundMask);
 
             HandleMovement();
+            if (CanShootLaser && _isShooting)
+            {
+                _weaponController.HandleShooting();
+            }
         }
 
         private void LateUpdate()
@@ -223,7 +236,7 @@ namespace GameCore
             _legCount++;
             if (_legCount == 1)
             {
-                _currentJumpPower = _jumpPower / 2f;
+                _currentJumpPower = _jumpPower / 1.25f;
             }
             else
             {
@@ -242,7 +255,7 @@ namespace GameCore
             _armL.SetActive(false);
             _armR.SetActive(false);
             _head.SetActive(false);
-            //_laser.SetActive(false);
+            _laser.SetActive(false);
         }
 
         private void HandleMovement()
@@ -379,6 +392,16 @@ namespace GameCore
         {
             _currentlySelectedInteractable?.StopInteraction();
             _currentlySelectedInteractable = null;
+        }
+
+        private void StartShooting()
+        {
+            _isShooting = true;
+        }
+
+        private void StopShooting()
+        {
+            _isShooting = false;
         }
 
         #endregion
