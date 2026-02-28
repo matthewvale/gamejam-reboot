@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1544485676911224016}
   - component: {fileID: 4404291171951392882}
   - component: {fileID: 748717135340913084}
+  - component: {fileID: -8892007871618460211}
   m_Layer: 0
   m_Name: RobotArmR
   m_TagString: Interactable
@@ -158,6 +159,24 @@ MonoBehaviour:
   CollectableName: Right Arm
   Type: 4
   SingleUse: 1
+  Draggable: 0
+--- !u!114 &-8892007871618460211
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5998949456948827366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8533e26ed88c3624fbfdcc34c4f8569a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RPSCore::RPSCore.RotateObject
+  objectToRotate: {fileID: 8608275737183404077}
+  rotationSpeed: 2
+  rotationDirection: {x: 1, y: 1, z: 1}
+  worldSpace: 0
+  updateMethodType: 0
 --- !u!1001 &2020195563724208825
 PrefabInstance:
   m_ObjectHideFlags: 0
