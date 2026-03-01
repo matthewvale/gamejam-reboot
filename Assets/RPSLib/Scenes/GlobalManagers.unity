@@ -459,6 +459,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7562765665801298393, guid: 5bac8966bff277d48a4924d66d2153cb, type: 3}
+      propertyPath: UIButtonClick_Clip
+      value: 
+      objectReference: {fileID: 8300000, guid: f6bef4af4dca88548bcd27a2014ccd76, type: 3}
+    - target: {fileID: 7562765665801298393, guid: 5bac8966bff277d48a4924d66d2153cb, type: 3}
       propertyPath: menuMusic_Clips.Array.size
       value: 0
       objectReference: {fileID: 0}
