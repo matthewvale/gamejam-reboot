@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace GameCore
 {
-    public class PlatformController : MonoBehaviour
+    public class PlatformController : MonoBehaviour, ICanActivate
     {
         #region Public Properties
 
@@ -17,23 +17,23 @@ namespace GameCore
         #region Private Properties
 
         private Transform _transform;
-        private Rigidbody _rigidbody;
+        private Rigidbody _rigidbody;        
 
         // Waypoints
         [SerializeField] private Transform[] _waypoints;
         private int _currentWaypointIndex = 0;
         private Transform _previousWaypoint;
         private Transform _targetWaypoint;
-        private Vector3 _lastPosition;
 
         // Behaviour
+        [SerializeField] private bool _activated = true;
         [SerializeField] private bool _shouldMove = true;
         [SerializeField] private bool _shouldMatchRotation = false;
 
         // Speeds
         [SerializeField] private float _moveSpeed = 1f;
         private float _elapsedTime = 0;
-        private float _timeToWaypoint = 0;
+        private float _timeToWaypoint = 0;        
 
         #endregion
 
@@ -57,30 +57,34 @@ namespace GameCore
 
         private void FixedUpdate()
         {
-            _elapsedTime += Time.deltaTime;
-
-            float elapsedTime = _elapsedTime / _timeToWaypoint;
-            elapsedTime = Mathf.SmoothStep(0, 1, elapsedTime);
-            //elapsedPercentage = Mathf.SmoothStep(0, 1, elapsedPercentage);
-
-            if (_shouldMove)
+            if (_activated)
             {
-                Vector3 targetPos = Vector3.Slerp(_previousWaypoint.position, _targetWaypoint.position, elapsedTime);
-                Vector3 frameDelta = targetPos - _lastPosition;
-                _rigidbody.MovePosition(_rigidbody.position + frameDelta);
-                _lastPosition = targetPos;
-            }
+                _elapsedTime += Time.fixedDeltaTime;
 
-            if (_shouldMatchRotation)
-            {
-                Quaternion targetRot = Quaternion.Lerp(_previousWaypoint.rotation, _targetWaypoint.rotation, elapsedTime);
-                _rigidbody.MoveRotation(targetRot);
-            }
+                float elapsedTime = _elapsedTime / _timeToWaypoint;
+                elapsedTime = Mathf.SmoothStep(0f, 1f, elapsedTime);
 
-            if (elapsedTime >= 1)
-            {
-                TargetNextWaypoint();
-            }
+                if (_shouldMove)
+                {
+                    Vector3 targetPos = Vector3.Slerp(_previousWaypoint.position, _targetWaypoint.position, elapsedTime);
+
+                    Vector3 frameDelta = targetPos - _rigidbody.position;
+
+                    _rigidbody.MovePosition(_rigidbody.position + frameDelta);
+                }
+
+                if (_shouldMatchRotation)
+                {
+                    Quaternion targetRot = Quaternion.Lerp(_previousWaypoint.rotation, _targetWaypoint.rotation, elapsedTime);
+
+                    _rigidbody.MoveRotation(targetRot);
+                }
+
+                if (elapsedTime >= 1)
+                {
+                    TargetNextWaypoint();
+                }
+            }            
         }
 
         #endregion
@@ -100,8 +104,16 @@ namespace GameCore
             _previousWaypoint = _waypoints[_currentWaypointIndex];
             _currentWaypointIndex = (_currentWaypointIndex + 1) % _waypoints.Length;
             _targetWaypoint = _waypoints[_currentWaypointIndex];
-
             _timeToWaypoint = Vector3.Distance(_previousWaypoint.position, _targetWaypoint.position) / _moveSpeed;
+        }
+
+        #endregion
+
+        #region ICanActivate Implementation
+
+        public void Activate()
+        {
+            _activated = true;
         }
 
         #endregion

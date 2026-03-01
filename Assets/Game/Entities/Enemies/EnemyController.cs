@@ -27,6 +27,8 @@ namespace GameCore
         [SerializeField] private int _maxDamageIndicatorPool = 6;
         private Dictionary<GameObject, DamageIndicator> _damageIndicators = new();
 
+        [SerializeField] private GameObject[] _objectsToActivate;
+
         #endregion
 
 
@@ -67,6 +69,11 @@ namespace GameCore
             destroySource = false;
             targetDestroyed = false;
 
+            if (_health.IsDead())
+            {
+                return;
+            }
+
             _health.ReduceHealth(amount);
             ShowDamageIndicator(amount);
             RPSLib.Debug.Log($"{gameObject.name} health is now {_health.GetHealth()}", RPSLib.Debug.Style.Warning);
@@ -75,6 +82,14 @@ namespace GameCore
             {
                 targetDestroyed = true;
                 RPSLib.Debug.Log($"{gameObject.name} is now dead!", RPSLib.Debug.Style.Error);
+
+                foreach (GameObject obj in _objectsToActivate)
+                {
+                    if (obj.TryGetComponent<ICanActivate>(out ICanActivate activator))
+                    {
+                        activator.Activate();
+                    }                    
+                }
             }
         }
 

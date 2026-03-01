@@ -68,6 +68,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: platform_01
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 9e0e81a7d21d1c44e88f78c6d76be001, type: 3}
+      propertyPath: m_TagString
+      value: Platform
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -114,7 +118,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7358414550063550015}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: bd10f24496cc890428942040897a01ae, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0

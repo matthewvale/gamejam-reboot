@@ -156,10 +156,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7111b43974f385b4eaf7c5df439b6c3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: GameCore::GameCore.EnemyController
-  _maxHealth: 100
+  _maxHealth: 10
   _damageIndicatorParent: {fileID: 1887789345333526120}
   _damageIndicatorPrefab: {fileID: 4569234700206992688, guid: 635f22a8a0291e045bddb39b7feaee87, type: 3}
   _maxDamageIndicatorPool: 6
+  _objectsToActivate: []
 --- !u!1001 &7579259294925471985
 PrefabInstance:
   m_ObjectHideFlags: 0
