@@ -8,7 +8,6 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static GameCore.BodyPart;
 
 namespace GameCore
 {
@@ -37,6 +36,11 @@ namespace GameCore
         private Rigidbody _rigidBody;
 
         private bool _isGrounded = false;
+        private Vector2 _moveInput;
+        private Vector3 _camForward;
+        private Vector3 _camRight;
+        private Vector3 _inputDirection;
+        private bool _onPlatform = false;
 
         [SerializeField] private Transform _playerSpawnPoint;
         [SerializeField] private float _groundCheckDistance = 1.05f;
@@ -108,12 +112,11 @@ namespace GameCore
             SetHappyState(0);
             UpdateInteractionPrompt(false);
 
-            CursorService.Instance.SetCursorType(CursorService.CursorType.DEFEND, CursorLockMode.Locked);
+            CursorService.Instance?.SetCursorType(CursorService.CursorType.DEFEND, CursorLockMode.Locked);
         }
 
         private void OnEnable()
         {
-            // This is not how I would usually do it, but for the sake of time...
             _rigidBody.position = _playerSpawnPoint.position;
         }
 
@@ -122,13 +125,27 @@ namespace GameCore
             _jumpAction.performed -= Jump;
         }
 
+        private void Update()
+        {
+            _moveInput = _moveAction.ReadValue<Vector2>();
+            _camForward = _camera.GetPivotTransform().forward;
+            _camRight = _camera.GetPivotTransform().right;
+
+            _inputDirection = _camForward * _moveInput.y + _camRight * _moveInput.x;
+            _inputDirection.y = 0f;
+            _inputDirection.Normalize();
+        }
+
         private void FixedUpdate()
         {
             // Check if grounded
-            Debug.DrawRay(_transform.position, Vector3.down * _groundCheckDistance, Color.red);
             _isGrounded = Physics.Raycast(_transform.position, Vector3.down, _groundCheckDistance, _groundMask);
 
-            HandleMovement();
+            if (!_onPlatform)
+            {
+                HandleMovement();
+            }
+
             if (CanShootLaser && _isShooting)
             {
                 _weaponController.HandleShooting();
@@ -182,7 +199,7 @@ namespace GameCore
 
         #region Public Methods
 
-        public void EnableBodyPart(BodyPartType partType)
+        public void EnableBodyPart(BodyPart.BodyPartType partType)
         {
             for (int i = 0; i < _bodyVFX.Length; i++)
             {
@@ -191,26 +208,26 @@ namespace GameCore
 
             switch (partType)
             {
-                case BodyPartType.LegL:
+                case BodyPart.BodyPartType.LegL:
                     _legL.SetActive(true);
                     _boxCollider.size = _fullBodyColliderSize;
                     break;
-                case BodyPartType.LegR:
+                case BodyPart.BodyPartType.LegR:
                     _legR.SetActive(true);
                     _boxCollider.size = _fullBodyColliderSize;
                     break;
-                case BodyPartType.ArmL:
+                case BodyPart.BodyPartType.ArmL:
                     CanDrag = true;
                     _armL.SetActive(true);
                     break;
-                case BodyPartType.ArmR:
+                case BodyPart.BodyPartType.ArmR:
                     CanDrag = true;
                     _armR.SetActive(true);
                     break;
-                case BodyPartType.Head:
+                case BodyPart.BodyPartType.Head:
                     _head.SetActive(true);
                     break;
-                case BodyPartType.Laser:
+                case BodyPart.BodyPartType.Laser:
                     CanShootLaser = true;
                     _laser.SetActive(true);
                     CursorService.Instance.SetCursorType(CursorService.CursorType.ATTACK, CursorLockMode.Locked);
@@ -220,7 +237,10 @@ namespace GameCore
 
         public void ResetPosition()
         {
+            _interactablesInRange.Clear();
             _rigidBody.position = _playerSpawnPoint.position;
+            _rigidBody.linearVelocity = Vector3.zero;
+            _rigidBody.angularVelocity = Vector3.zero;
         }
 
         public void SetHappyState(int index)
@@ -237,7 +257,7 @@ namespace GameCore
             _legCount++;
             if (_legCount == 1)
             {
-                _currentJumpPower = _jumpPower / 1.25f;
+                _currentJumpPower = _jumpPower / 1.1f;
             }
             else
             {
@@ -261,6 +281,7 @@ namespace GameCore
 
         private void HandleMovement()
         {
+            // Move direction, camera relative
             var moveInput = _moveAction.ReadValue<Vector2>();
             Vector3 camForward = _camera.GetPivotTransform().forward;
             Vector3 camRight = _camera.GetPivotTransform().right;
@@ -271,26 +292,17 @@ namespace GameCore
             camForward.Normalize();
             camRight.Normalize();
 
-            // Move direction, camera relative
             Vector3 moveDirection = camForward * moveInput.y + camRight * moveInput.x;
             moveDirection.Normalize();
 
             Vector3 targetVel = moveDirection * _moveSpeed;
 
-            Vector3 smoothedMove = Vector3.Lerp(
-                _rigidBody.linearVelocity,
-                targetVel,
-                _acceleration * Time.fixedDeltaTime
-            );
-
-            //_rb.linearVelocity = smoothedMove;
-
-            _rigidBody.MovePosition(_rigidBody.position + smoothedMove * _moveSpeed * Time.fixedDeltaTime);
+            _rigidBody.MovePosition(_rigidBody.position + targetVel * _moveSpeed * Time.fixedDeltaTime);
 
             // Rotation is handled by the camera, so we just need to ensure the rigidbody's rotation matches the transform's rotation
-            if (moveDirection != Vector3.zero)
+            if (_inputDirection != Vector3.zero)
             {
-                Quaternion targetRotation = Quaternion.LookRotation(moveDirection, Vector3.up);
+                Quaternion targetRotation = Quaternion.LookRotation(_inputDirection, Vector3.up);
 
                 Quaternion newRot = Quaternion.Slerp(_rigidBody.rotation, targetRotation, _rotationSpeed * Time.fixedDeltaTime);
 
@@ -334,6 +346,7 @@ namespace GameCore
                 }
             }
 
+            RPSLib.Debug.Log($"UpdateNearestInteractablePrompt :: NearestInteractable{_nearestInteractable}");
             if (_nearestInteractable != null)
             {
                 UpdateInteractionPrompt(true);
@@ -348,6 +361,7 @@ namespace GameCore
         {
             if (!state || _nearestInteractable == null)
             {
+                RPSLib.Debug.Log($"UpdateInteractionPrompt :: State {state}, NearestInteractable{_nearestInteractable}");
                 _interactableCanvas.enabled = false;
                 return;
             }
