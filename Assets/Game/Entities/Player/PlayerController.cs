@@ -12,7 +12,7 @@ using UnityEngine.InputSystem;
 namespace GameCore
 {
     [RequireComponent(typeof(Rigidbody))]
-    public class PlayerController : MonoBehaviour
+    public class PlayerController : MonoBehaviour, IDamageHandler
     {
         #region Public Properties
 
@@ -22,6 +22,8 @@ namespace GameCore
         public float DragSpeed { get; set; } = 0.5f;
         public bool CanShootLaser { get; set; } = false;
 
+        public bool UnlockAllProgress = false;
+
         #endregion
 
         #region Private Properties
@@ -30,6 +32,7 @@ namespace GameCore
         private InputAction _jumpAction;
         private InputAction _interactAction;
         private InputAction _shootAction;
+        private InputAction _escapeAction;
 
         private CameraControllerV2 _camera;
         private Transform _transform;
@@ -41,6 +44,10 @@ namespace GameCore
         private Vector3 _camRight;
         private Vector3 _inputDirection;
         private bool _onPlatform = false;
+
+        // Health
+        private Health _health;
+        [SerializeField] private float _maxHealth = 100f;
 
         [SerializeField] private Transform _playerSpawnPoint;
         [SerializeField] private float _groundCheckDistance = 1.05f;
@@ -99,6 +106,9 @@ namespace GameCore
             _moveAction = InputSystem.actions.FindAction(InputActionConstants.DirectionalMove);
             _jumpAction = InputSystem.actions.FindAction(InputActionConstants.Space);
             _interactAction = InputSystem.actions.FindAction(InputActionConstants.InteractKey);
+            _escapeAction = InputSystem.actions.FindAction(InputActionConstants.Escape);
+            _escapeAction.started -= LoadMainMenu;
+            _escapeAction.started += LoadMainMenu;
 
             _jumpAction.performed += Jump;
             _interactAction.started += ctx => StartInteraction();
@@ -108,11 +118,21 @@ namespace GameCore
             _shootAction.started += ctx => StartShooting();
             _shootAction.canceled += ctx => StopShooting();
 
+            if (UnlockAllProgress)
+            {
+                UnlockAll();
+                UpdateInteractionPrompt(false);
+                return;
+            }
+
+            _health = new Health();
+            _health.SetHealth(_maxHealth);
+
             DisableAllBodyParts();
             SetHappyState(0);
             UpdateInteractionPrompt(false);
 
-            CursorService.Instance?.SetCursorType(CursorService.CursorType.DEFEND, CursorLockMode.Locked);
+            CursorService.Instance.SetCursorType(CursorService.CursorType.DEFEND, CursorLockMode.Locked);
         }
 
         private void OnEnable()
@@ -122,7 +142,12 @@ namespace GameCore
 
         private void OnDestroy()
         {
+            _escapeAction.started -= LoadMainMenu;
             _jumpAction.performed -= Jump;
+            _interactAction.started -= ctx => StartInteraction();
+            _interactAction.canceled -= ctx => StopInteraction();
+            _shootAction.started -= ctx => StartShooting();
+            _shootAction.canceled -= ctx => StopShooting();
         }
 
         private void Update()
@@ -265,6 +290,17 @@ namespace GameCore
             }
         }
 
+        public void UnlockAll()
+        {
+            EnableBodyPart(BodyPart.BodyPartType.LegR);
+            EnableBodyPart(BodyPart.BodyPartType.LegL);
+            EnableBodyPart(BodyPart.BodyPartType.ArmL);
+            EnableBodyPart(BodyPart.BodyPartType.ArmR);
+            EnableBodyPart(BodyPart.BodyPartType.Laser);
+            EnableBodyPart(BodyPart.BodyPartType.Head);
+            SetCanJump();
+        }
+
         #endregion
 
         #region Private Methods
@@ -360,7 +396,6 @@ namespace GameCore
         {
             if (!state || _nearestInteractable == null)
             {
-                RPSLib.Debug.Log($"UpdateInteractionPrompt :: State {state}, NearestInteractable{_nearestInteractable}");
                 _interactableCanvas.enabled = false;
                 return;
             }
@@ -416,6 +451,40 @@ namespace GameCore
         private void StopShooting()
         {
             _isShooting = false;
+        }
+
+        private void LoadMainMenu(InputAction.CallbackContext context)
+        {
+            _escapeAction.started -= LoadMainMenu;
+            CursorService.Instance.SetCursorType(CursorService.CursorType.MAIN, CursorLockMode.None);
+            PlayerProgressService.Instance.ExitToMenu();
+        }
+
+        #endregion
+
+        #region IDamageHandler Implementation
+
+        public void DoDamage(float amount, out bool destroySource, out bool targetDestroyed, Vector3? hitPoint)
+        {
+            destroySource = false;
+            targetDestroyed = false;
+
+            _health.SetHealth(_health.GetHealth() - amount);
+            if (_health.IsDead())
+            {
+                _health.SetHealth(_maxHealth);
+                ResetPosition();
+            }
+        }
+
+        public float GetHealth()
+        {
+            return _health.GetHealth();
+        }
+
+        public float GetMaxHealth()
+        {
+            return _maxHealth;
         }
 
         #endregion

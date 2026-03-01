@@ -6,6 +6,7 @@ using RPSCore;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace GameCore
 {
@@ -19,9 +20,12 @@ namespace GameCore
 
         #region Private Properties
 
+        [SerializeField] private bool _isBoss = false;
         [SerializeField] private float _maxHealth = 100f;
         private Health _health;
 
+        [SerializeField] private Canvas _healthCanvas;
+        [SerializeField] private Slider _healthSlider;
         [SerializeField] private RectTransform _damageIndicatorParent;
         [SerializeField] private GameObject _damageIndicatorPrefab;
         [SerializeField] private int _maxDamageIndicatorPool = 6;
@@ -38,6 +42,16 @@ namespace GameCore
         {
             _health = new Health();
             _health.SetHealth(_maxHealth);
+
+            if (_healthSlider != null)
+            {
+                _healthSlider.minValue = 0f;
+                _healthSlider.maxValue = _maxHealth;                
+            }
+            if (_healthCanvas != null)
+            {
+                _healthCanvas.enabled = true;
+            }
 
             for (int i = 0; i < _maxDamageIndicatorPool; i++)
             {
@@ -67,6 +81,14 @@ namespace GameCore
             }
         }
 
+        private void UpdateHealthBar()
+        {
+            if (_healthSlider != null)
+            {
+                _healthSlider.value = _health.GetHealth();
+            }
+        }
+
         #endregion
 
         #region IDamageHandler Implementation
@@ -78,11 +100,13 @@ namespace GameCore
 
             if (_health.IsDead())
             {
+                ShowDamageIndicator(amount);
                 return;
             }
 
             _health.ReduceHealth(amount);
             ShowDamageIndicator(amount);
+            UpdateHealthBar();
 
             if (_health.IsDead())
             {
@@ -93,7 +117,12 @@ namespace GameCore
                     if (obj.TryGetComponent(out ICanActivate activator))
                     {
                         activator.Activate();
-                    }                    
+                    }
+                }
+
+                if (_isBoss)
+                {
+                    PlayerProgressService.Instance.ExitToMenu();
                 }
             }
         }

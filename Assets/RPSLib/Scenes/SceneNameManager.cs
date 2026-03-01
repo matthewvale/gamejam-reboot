@@ -13,6 +13,7 @@ namespace RPSCore {
         // Game scenes
         public const string MAIN_MENU = "MainMenu";
         public const string GAME = "Game";
+        public const string SHOOTING_RANGE = "ShootingRange";
 
     }
 

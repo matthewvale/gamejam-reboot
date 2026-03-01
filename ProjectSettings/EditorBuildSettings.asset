@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Game/Scenes/Game.unity
     guid: be5431a2c1806d44a8b749d99d68c378
+  - enabled: 1
+    path: Assets/Game/Scenes/ShootingRange.unity
+    guid: de9a4ca6fa8be4342ae3f519482552c2
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 92c998133f0b82d4f8861344d7a38964, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: aec8e20b875068f4a8f02fa8f91882ea, type: 3}

@@ -84,6 +84,7 @@ namespace RPSCore
 
         [Header("Following Objects")]
         public float followSpeed = 2f;
+        public Vector3 offsetCameraPosition;
 
         [Header("Go To Position")]
         public float goToPositionSpeed = 10f;
@@ -151,7 +152,12 @@ namespace RPSCore
                 }
 
                 //cameraPivot.position = Vector3.Slerp(cameraPivot.position, _objectToFollow.position + _mouseDirection, followSpeed * Time.unscaledDeltaTime);
-                cameraPivot.position = Vector3.SmoothDamp(cameraPivot.position, _objectToFollow.position + _mouseDirection, ref _directionalVector, followSpeed * Time.unscaledDeltaTime, _currentMaxMoveSpeed, Time.unscaledDeltaTime);
+                //Vector3 worldOffset = _objectToFollow.right * offsetCameraPosition.x + _objectToFollow.up * offsetCameraPosition.y + _objectToFollow.forward * offsetCameraPosition.z;
+                //cameraPivot.position = Vector3.SmoothDamp(cameraPivot.position, _objectToFollow.position + _mouseDirection, ref _directionalVector, followSpeed * Time.unscaledDeltaTime, _currentMaxMoveSpeed, Time.unscaledDeltaTime);
+
+                Vector3 worldOffset = _objectToFollow.right * offsetCameraPosition.x + _objectToFollow.up * offsetCameraPosition.y + _objectToFollow.forward * offsetCameraPosition.z;
+                Vector3 targetPosition = _objectToFollow.position + worldOffset + _mouseDirection;
+                cameraPivot.position = Vector3.SmoothDamp(cameraPivot.position, targetPosition, ref _directionalVector, followSpeed * Time.unscaledDeltaTime, _currentMaxMoveSpeed, Time.unscaledDeltaTime);
                 return;
             }
 
@@ -173,7 +179,8 @@ namespace RPSCore
                 return;
             }
 
-            if (CanMove) UpdateCameraPosition();
+            if (CanMove)
+                UpdateCameraPosition();
             ClampCameraPosition();
         }
 

@@ -44,6 +44,12 @@ namespace GameCore
             RPSLib.SceneManagement.UnloadScene(SceneNameManager.MAIN_MENU);
         }
 
+        public void LoadShootingRange()
+        {
+            SceneManagement.LoadScene(SceneNameManager.SHOOTING_RANGE, UnityEngine.SceneManagement.LoadSceneMode.Additive);
+            RPSLib.SceneManagement.UnloadScene(SceneNameManager.MAIN_MENU);
+        }
+
         public void ShowPanel(Canvas canvas)
         {
             for (int i = 0; i < _mainMenuCanvases.Length; i++)

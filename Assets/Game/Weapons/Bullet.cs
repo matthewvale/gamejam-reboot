@@ -23,6 +23,8 @@ namespace GameCore
 
         [SerializeField] private float _damage = 10f;
 
+        [SerializeField] private GameObject _bulletImpactVFX;
+
         #endregion
 
 
@@ -43,7 +45,8 @@ namespace GameCore
         {
             _rigidbody.linearVelocity = Vector3.zero;
             _rigidbody.AddForce(forceDirection * force, ForceMode.Impulse);
-            Invoke(nameof(DisableBullet), 2f);
+            CancelInvoke();
+            Invoke(nameof(DisableBullet), 3f);
         }
 
         #endregion
@@ -66,6 +69,9 @@ namespace GameCore
             if (collisionData.gameObject.TryGetComponent<IDamageHandler>(out var damageHandler))
             {
                 damageHandler.DoDamage(Damage, out _, out _, null);
+                _bulletImpactVFX.transform.position = _transform.position;
+                _bulletImpactVFX.transform.SetParent(null);
+                _bulletImpactVFX.SetActive(true);
                 gameObject.SetActive(false);
             }
         }

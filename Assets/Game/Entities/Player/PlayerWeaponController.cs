@@ -31,6 +31,7 @@ namespace GameCore
         [SerializeField] private float _bulletFireRatePerSec = 0.5f;
         private float _nextFireTime = 0f;
 
+        [SerializeField] private Collider _colliderToIgnore;
 
         private Dictionary<GameObject, Bullet> _bulletPool = new();
 
@@ -90,9 +91,10 @@ namespace GameCore
             foreach (var kvp in _bulletPool)
             {
                 if (!kvp.Key.activeInHierarchy)
-                {
-                    kvp.Key.transform.SetPositionAndRotation(_bulletSpawnPoint.transform.position, _bulletSpawnPoint.transform.rotation);
+                {                    
                     kvp.Key.SetActive(true);
+                    kvp.Key.transform.SetPositionAndRotation(_bulletSpawnPoint.transform.position, _bulletSpawnPoint.transform.rotation);
+                    Physics.IgnoreCollision(_colliderToIgnore, kvp.Value.GetComponent<Collider>());
                     kvp.Value.Init(_weaponTransform.forward, _bulletForce);
                     _weaponAudioSource.Play();
                     return;

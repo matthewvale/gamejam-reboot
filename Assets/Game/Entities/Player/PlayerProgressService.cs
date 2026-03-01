@@ -3,6 +3,7 @@
 /// ------------------------------
 
 using RPSCore;
+using RPSLib;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
 
 namespace GameCore
 {
@@ -24,6 +26,8 @@ namespace GameCore
         #endregion
 
         #region Private Properties
+
+        [SerializeField] private bool _isShootingRange = false;
 
         private List<BodyPart> _bodyParts = new();
 
@@ -48,6 +52,11 @@ namespace GameCore
         private void Awake()
         {
             Instance = this;
+
+            if (_isShootingRange)
+            {
+                return;
+            }
 
             _itemCollectedCanvasGroup.alpha = 0f;
             _postProcessingVolume.profile.TryGet(out _colorAdjustments);
@@ -76,8 +85,13 @@ namespace GameCore
 
         public void LoadNextArea()
         {
-            //_levelAreaLoadCoroutine = 
             StartCoroutine(LoadLevel());
+        }
+
+        public void ExitToMenu()
+        {
+            StopCoroutine(LoadMainMenu());
+            StartCoroutine(LoadMainMenu());
         }
 
         #endregion
@@ -139,7 +153,7 @@ namespace GameCore
 
         private IEnumerator LoadLevel()
         {
-            SceneFadeService.Instance.TriggerFade($"Re-attaching part: {_bodyParts[^1].Type}", 2f, 3f);
+            SceneFadeService.Instance.TriggerFade($"Rebooting...\nAttaching part: {_bodyParts[^1].Type}", 2f, 3f);
             yield return _levelAreaLoadTime;
 
             _currentAreaIndex++;
@@ -153,6 +167,16 @@ namespace GameCore
             _playerController.ResetPosition();
 
             _colorAdjustments.saturation.value += 200 / _levelAreaParents.Count;
+        }
+
+        private IEnumerator LoadMainMenu()
+        {
+            SceneFadeService.Instance.TriggerFade($"Rebooting!", 1f, 3f);
+            yield return _levelAreaLoadTime;
+
+            CursorService.Instance.SetCursorType(CursorService.CursorType.MAIN, CursorLockMode.None);
+            SceneManagement.LoadScene(SceneNameManager.MAIN_MENU, LoadSceneMode.Additive);
+            SceneManagement.UnloadScene(SceneManager.GetActiveScene().name);
         }
 
         #endregion
