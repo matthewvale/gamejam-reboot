@@ -93,6 +93,19 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -282,7 +295,7 @@ TextureImporter:
         height: 500
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 128, y: 128, z: 128, w: 128}
       customData: 
       outline: []
       physicsShape: []
@@ -299,12 +312,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1558
-        y: 3062
+        y: 3063
         width: 500
         height: 500
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 32, y: 80, z: 80, w: 32}
       customData: 
       outline: []
       physicsShape: []
@@ -326,7 +339,7 @@ TextureImporter:
         height: 492
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 32, y: 80, z: 80, w: 32}
       customData: 
       outline: []
       physicsShape: []
@@ -589,7 +602,7 @@ TextureImporter:
         width: 953
         height: 482
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

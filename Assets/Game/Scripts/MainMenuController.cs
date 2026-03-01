@@ -19,6 +19,8 @@ namespace GameCore
         #region Private Properties
 
         [SerializeField] private Canvas[] _mainMenuCanvases;
+        [SerializeField] private AudioSource _audioSource;
+        [SerializeField] private AudioClip[] _audioClips;
 
 
         #endregion
@@ -26,7 +28,11 @@ namespace GameCore
 
         #region Unity Flow
 
-
+        private void Awake()
+        {
+            _audioSource.clip = _audioClips[Random.Range(0, _audioClips.Length)];
+            _audioSource.Play();
+        }
 
         #endregion
 
