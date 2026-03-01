@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2719780579480647324}
   - component: {fileID: 8705338852332936614}
   - component: {fileID: 7460740394049684071}
+  - component: {fileID: -8650854499855414965}
   m_Layer: 0
   m_Name: Canvas_DamageIndicators
   m_TagString: Untagged
@@ -101,3 +102,21 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &-8650854499855414965
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5374838643906445975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d78c6e72c3355334aac6c80b9b1479d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RPSCore::RPSCore.UILookAtCamera
+  _camera: {fileID: 0}
+  HideAfterDistance: 0
+  DistanceToHide: 450
+  RotateOnX: 1
+  RotateOnY: 1
+  RotateOnZ: 0
