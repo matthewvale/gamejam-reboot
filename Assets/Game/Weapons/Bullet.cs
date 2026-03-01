@@ -39,10 +39,10 @@ namespace GameCore
 
         #region Public Methods
 
-        public void Init()
+        public void Init(Vector3 forceDirection)
         {
             _rigidbody.linearVelocity = Vector3.zero;
-            _rigidbody.AddForce(Vector3.forward, ForceMode.Impulse);
+            _rigidbody.AddForce(forceDirection, ForceMode.Impulse);
             Invoke(nameof(DisableBullet), 2f);
         }
 

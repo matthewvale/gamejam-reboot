@@ -17,6 +17,8 @@ namespace GameCore
 
         #region Private Properties
 
+        private Transform _transform;
+
         [SerializeField] private AudioSource _weaponAudioSource;
         [SerializeField] private GameObject _bulletPrefab;
         [SerializeField] private int _bulletPoolSize = 8;
@@ -35,6 +37,8 @@ namespace GameCore
 
         private void Awake()
         {
+            _transform = transform;
+
             for (int i = 0; i < _bulletPoolSize; i++)
             {
                 GameObject bullet = Instantiate(_bulletPrefab);
@@ -70,7 +74,7 @@ namespace GameCore
                 {
                     kvp.Key.transform.SetPositionAndRotation(_bulletSpawnPoint.transform.position, _bulletSpawnPoint.transform.rotation);
                     kvp.Key.SetActive(true);
-                    kvp.Value.Init();
+                    kvp.Value.Init(_transform.forward);
                     _weaponAudioSource.Play();
                 }
             }
