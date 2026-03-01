@@ -140,7 +140,7 @@ namespace RPSCore
         {
             if (regularMusic_Clips.Length == 0)
             {
-                RPSLib.Debug.Log("AudioManager :: No music clips found.", RPSLib.Debug.Style.Warning);
+                //RPSLib.Debug.Log("AudioManager :: No music clips found.", RPSLib.Debug.Style.Warning);
                 return;
             }
 
