@@ -346,7 +346,6 @@ namespace GameCore
                 }
             }
 
-            RPSLib.Debug.Log($"UpdateNearestInteractablePrompt :: NearestInteractable{_nearestInteractable}");
             if (_nearestInteractable != null)
             {
                 UpdateInteractionPrompt(true);

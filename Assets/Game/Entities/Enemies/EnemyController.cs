@@ -38,6 +38,13 @@ namespace GameCore
         {
             _health = new Health();
             _health.SetHealth(_maxHealth);
+
+            for (int i = 0; i < _maxDamageIndicatorPool; i++)
+            {
+                GameObject indicator = Instantiate(_damageIndicatorPrefab, _damageIndicatorParent);
+                indicator.SetActive(false);
+                _damageIndicators.TryAdd(indicator, indicator.GetComponent<DamageIndicator>());
+            }
         }
 
         #endregion
@@ -83,7 +90,7 @@ namespace GameCore
 
                 foreach (GameObject obj in _objectsToActivate)
                 {
-                    if (obj.TryGetComponent<ICanActivate>(out ICanActivate activator))
+                    if (obj.TryGetComponent(out ICanActivate activator))
                     {
                         activator.Activate();
                     }                    
