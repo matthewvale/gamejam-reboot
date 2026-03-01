@@ -2,6 +2,7 @@
 /// Original Author: Matthew Vale
 /// ------------------------------
 
+using RPSCore;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,12 +19,15 @@ namespace GameCore
         #region Private Properties
 
         private Transform _transform;
+        private CameraControllerV2 _cameraController;
 
+        [SerializeField] private Transform _weaponTransform;
         [SerializeField] private AudioSource _weaponAudioSource;
         [SerializeField] private GameObject _bulletPrefab;
         [SerializeField] private int _bulletPoolSize = 8;
         [SerializeField] private Transform _bulletSpawnPoint;
 
+        [SerializeField] private float _bulletForce = 10f;
         [SerializeField] private float _bulletFireRatePerSec = 0.5f;
         private float _nextFireTime = 0f;
 
@@ -44,6 +48,21 @@ namespace GameCore
                 GameObject bullet = Instantiate(_bulletPrefab);
                 bullet.SetActive(false);
                 _bulletPool.TryAdd(bullet, bullet.GetComponent<Bullet>());
+            }
+        }
+
+        private void Start()
+        {
+            _cameraController = CameraControllerV2.Instance;
+        }
+
+        private void Update()
+        {
+            if (_cameraController != null)
+            {
+                Quaternion targetRot = _cameraController.transform.rotation;
+                targetRot.z = 0f;
+                _weaponTransform.rotation = targetRot;
             }
         }
 
@@ -74,8 +93,9 @@ namespace GameCore
                 {
                     kvp.Key.transform.SetPositionAndRotation(_bulletSpawnPoint.transform.position, _bulletSpawnPoint.transform.rotation);
                     kvp.Key.SetActive(true);
-                    kvp.Value.Init(_transform.forward);
+                    kvp.Value.Init(_weaponTransform.forward, _bulletForce);
                     _weaponAudioSource.Play();
+                    return;
                 }
             }
         }
