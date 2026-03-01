@@ -17,6 +17,7 @@ namespace GameCore
 
         #region Private Properties
 
+        [SerializeField] private AudioSource _weaponAudioSource;
         [SerializeField] private GameObject _bulletPrefab;
         [SerializeField] private int _bulletPoolSize = 8;
         [SerializeField] private Transform _bulletSpawnPoint;
@@ -48,12 +49,12 @@ namespace GameCore
 
         public void HandleShooting()
         {
-            _nextFireTime = Time.time + (1f / _bulletFireRatePerSec);
-
-            if (Time.time >= _nextFireTime)
+            _nextFireTime += Time.deltaTime;
+            float _calculatedFiringSpeed = 1f / _bulletFireRatePerSec;
+            if (_nextFireTime >= _calculatedFiringSpeed)
             {
+                _nextFireTime = 0;
                 ShootBullet();
-                _nextFireTime = 0f;
             }
         }
 
@@ -70,6 +71,7 @@ namespace GameCore
                     kvp.Key.transform.SetPositionAndRotation(_bulletSpawnPoint.transform.position, _bulletSpawnPoint.transform.rotation);
                     kvp.Key.SetActive(true);
                     kvp.Value.Init();
+                    _weaponAudioSource.Play();
                 }
             }
         }
