@@ -751,7 +751,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 0.15
+      value: 0.3
       mode: 0
       spread: 0
       speed:
@@ -1548,7 +1548,7 @@ ParticleSystem:
     y:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.5
+      scalar: 0.75
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -1707,7 +1707,7 @@ ParticleSystem:
     orbitalY:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 10
+      scalar: 0
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -1972,7 +1972,7 @@ ParticleSystem:
     radial:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0
+      scalar: -1
       minScalar: 0
       maxCurve:
         serializedVersion: 2
