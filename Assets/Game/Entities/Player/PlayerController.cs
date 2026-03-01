@@ -158,6 +158,7 @@ namespace GameCore
             if (other.CompareTag("Respawn"))
             {
                 _rigidBody.position = _playerSpawnPoint.position;
+                _rigidBody.linearVelocity = Vector3.zero;
             }
         }
 
