@@ -37,6 +37,7 @@ namespace GameCore
             for (int i = 0; i < _bulletPoolSize; i++)
             {
                 GameObject bullet = Instantiate(_bulletPrefab);
+                bullet.SetActive(false);
                 _bulletPool.TryAdd(bullet, bullet.GetComponent<Bullet>());
             }
         }
