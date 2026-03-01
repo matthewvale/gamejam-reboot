@@ -39,7 +39,7 @@ namespace GameCore
 
         #region Private Properties
 
-
+        [SerializeField] private AudioSource _audioSource;
 
         #endregion
 
@@ -67,6 +67,7 @@ namespace GameCore
         public override void StartInteraction(Transform source)
         {
             PlayerProgressService.Instance.AddBodyPart(this);
+            _audioSource.Play();
             Destroy(gameObject);
         }
 
