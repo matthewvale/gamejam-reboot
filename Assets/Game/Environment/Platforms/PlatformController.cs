@@ -17,12 +17,14 @@ namespace GameCore
         #region Private Properties
 
         private Transform _transform;
+        private Rigidbody _rigidbody;
 
         // Waypoints
         [SerializeField] private Transform[] _waypoints;
         private int _currentWaypointIndex = 0;
         private Transform _previousWaypoint;
         private Transform _targetWaypoint;
+        private Vector3 _lastPosition;
 
         // Behaviour
         [SerializeField] private bool _shouldMove = true;
@@ -40,6 +42,7 @@ namespace GameCore
         private void Awake()
         {
             _transform = GetComponent<Transform>();
+            _rigidbody = GetComponent<Rigidbody>();
 
             if (_waypoints == null || _waypoints.Length <= 1)
             {
@@ -56,18 +59,25 @@ namespace GameCore
         {
             _elapsedTime += Time.deltaTime;
 
-            float elapsedPercentage = _elapsedTime / _timeToWaypoint;
-            elapsedPercentage = Mathf.SmoothStep(0, 1, elapsedPercentage);
+            float elapsedTime = _elapsedTime / _timeToWaypoint;
+            elapsedTime = Mathf.SmoothStep(0, 1, elapsedTime);
+            //elapsedPercentage = Mathf.SmoothStep(0, 1, elapsedPercentage);
+
             if (_shouldMove)
             {
-                _transform.position = Vector3.Slerp(_previousWaypoint.position, _targetWaypoint.position, elapsedPercentage);
-            }
-            if (_shouldMatchRotation)
-            {
-                _transform.rotation = Quaternion.Lerp(_previousWaypoint.rotation, _targetWaypoint.rotation, elapsedPercentage);
+                Vector3 targetPos = Vector3.Slerp(_previousWaypoint.position, _targetWaypoint.position, elapsedTime);
+                Vector3 frameDelta = targetPos - _lastPosition;
+                _rigidbody.MovePosition(_rigidbody.position + frameDelta);
+                _lastPosition = targetPos;
             }
 
-            if (elapsedPercentage >= 1)
+            if (_shouldMatchRotation)
+            {
+                Quaternion targetRot = Quaternion.Lerp(_previousWaypoint.rotation, _targetWaypoint.rotation, elapsedTime);
+                _rigidbody.MoveRotation(targetRot);
+            }
+
+            if (elapsedTime >= 1)
             {
                 TargetNextWaypoint();
             }
