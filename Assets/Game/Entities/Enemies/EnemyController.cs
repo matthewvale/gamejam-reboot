@@ -76,12 +76,10 @@ namespace GameCore
 
             _health.ReduceHealth(amount);
             ShowDamageIndicator(amount);
-            RPSLib.Debug.Log($"{gameObject.name} health is now {_health.GetHealth()}", RPSLib.Debug.Style.Warning);
 
             if (_health.IsDead())
             {
                 targetDestroyed = true;
-                RPSLib.Debug.Log($"{gameObject.name} is now dead!", RPSLib.Debug.Style.Error);
 
                 foreach (GameObject obj in _objectsToActivate)
                 {
