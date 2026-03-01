@@ -43,11 +43,17 @@ namespace GameCore
         {
             _rigidbody.linearVelocity = Vector3.zero;
             _rigidbody.AddForce(Vector3.forward, ForceMode.Impulse);
+            Invoke(nameof(DisableBullet), 2f);
         }
 
         #endregion
 
         #region Private Methods
+
+        private void DisableBullet()
+        {
+            gameObject.SetActive(false);
+        }
 
         #endregion
 
@@ -55,7 +61,7 @@ namespace GameCore
 
         public override float Damage { get; set; }
 
-        public override void OnCollisionEnter(Collision collisionData)
+        public override void OnTriggerEnter(Collider collisionData)
         {
             if (collisionData.gameObject.TryGetComponent<IDamageHandler>(out var damageHandler))
             {
@@ -64,9 +70,8 @@ namespace GameCore
             }
         }
 
-        public override void OnTriggerEnter(Collider collisionData)
+        public override void OnCollisionEnter(Collision collisionData)
         {
-
         }
 
         #endregion
