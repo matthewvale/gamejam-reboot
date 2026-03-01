@@ -46,7 +46,8 @@ namespace GameCore
             if (_healthSlider != null)
             {
                 _healthSlider.minValue = 0f;
-                _healthSlider.maxValue = _maxHealth;                
+                _healthSlider.maxValue = _maxHealth;           
+                _healthSlider.value = _maxHealth;
             }
             if (_healthCanvas != null)
             {

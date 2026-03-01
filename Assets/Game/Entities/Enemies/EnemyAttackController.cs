@@ -23,12 +23,14 @@ namespace GameCore
         [SerializeField] private AudioSource _weaponAudioSource;
         [SerializeField] private GameObject _bulletPrefab;
         [SerializeField] private int _bulletPoolSize = 8;
-        //[SerializeField] private Transform _bulletSpawnPoint;
+        [SerializeField] private Transform _bulletSpawnPoint;
 
         [SerializeField] private float _bulletForce = 10f;
         //[SerializeField] private float _bulletFireRatePerSec = 0.5f;
 
         private Dictionary<GameObject, Bullet> _bulletPool = new();
+
+        [SerializeField] private Collider[] _collidersToIgnore;
 
         #endregion
 
@@ -68,18 +70,19 @@ namespace GameCore
                 if (!kvp.Key.activeInHierarchy)
                 {
                     kvp.Key.SetActive(true);
-                    Vector3 bulletSpawnPoint = _playerTransform.position;
-                    bulletSpawnPoint.x += Random.Range(-5f, 5f);
-                    bulletSpawnPoint.z += Random.Range(-5f, 5f);
-                    bulletSpawnPoint.y = 20f;
 
-                    kvp.Key.transform.SetPositionAndRotation(bulletSpawnPoint, _playerTransform.rotation);
-                    kvp.Value.Init(Vector3.down, _bulletForce);
+                    Vector3 directionToPlayer = (_playerTransform.position - _bulletSpawnPoint.position).normalized;
+                    kvp.Key.transform.SetPositionAndRotation(_bulletSpawnPoint.position, Quaternion.LookRotation(directionToPlayer));
+                    foreach (var col in _collidersToIgnore)
+                    {
+                        Physics.IgnoreCollision(col, kvp.Value.GetComponent<Collider>());
+                    }
+                    kvp.Value.Init(directionToPlayer, _bulletForce);
                     _weaponAudioSource.Play();
                     Invoke(nameof(Attack), Random.Range(2, 4f));
                     return;
                 }
-            }            
+            }
         }
 
         #endregion

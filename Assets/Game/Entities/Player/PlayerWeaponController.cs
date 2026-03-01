@@ -31,7 +31,7 @@ namespace GameCore
         [SerializeField] private float _bulletFireRatePerSec = 0.5f;
         private float _nextFireTime = 0f;
 
-        [SerializeField] private Collider _colliderToIgnore;
+        [SerializeField] private Collider[] _collidersToIgnore;
 
         private Dictionary<GameObject, Bullet> _bulletPool = new();
 
@@ -62,7 +62,7 @@ namespace GameCore
             if (_cameraController != null)
             {
                 Quaternion targetRot = _cameraController.transform.rotation;
-                targetRot.z = 0f;
+                //targetRot.z = 0f;
                 _weaponTransform.rotation = targetRot;
             }
         }
@@ -94,7 +94,10 @@ namespace GameCore
                 {                    
                     kvp.Key.SetActive(true);
                     kvp.Key.transform.SetPositionAndRotation(_bulletSpawnPoint.transform.position, _bulletSpawnPoint.transform.rotation);
-                    Physics.IgnoreCollision(_colliderToIgnore, kvp.Value.GetComponent<Collider>());
+                    foreach(var col in _collidersToIgnore)
+                    {
+                        Physics.IgnoreCollision(col, kvp.Value.GetComponent<Collider>());
+                    }                    
                     kvp.Value.Init(_weaponTransform.forward, _bulletForce);
                     _weaponAudioSource.Play();
                     return;

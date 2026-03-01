@@ -29,10 +29,11 @@ namespace GameCore
         #region Private Properties
 
         private InputAction _moveAction;
+        private InputAction _sprintAction;
         private InputAction _jumpAction;
         private InputAction _interactAction;
+        private InputAction _dragAction;
         private InputAction _shootAction;
-        private InputAction _escapeAction;
 
         private CameraControllerV2 _camera;
         private Transform _transform;
@@ -55,6 +56,8 @@ namespace GameCore
         private float _currentJumpPower = 0f;
         [SerializeField] private float _acceleration = 10f;
         [SerializeField] private float _moveSpeed = 2f;
+        [SerializeField] private float _sprintSpeed = 3.5f;
+        private float _currentSpeed;
         [SerializeField] private float _rotationSpeed = 1f;
         [SerializeField] private float _sprintSpeedMultiplier = 1.5f;
         [SerializeField] private LayerMask _groundMask;
@@ -97,6 +100,13 @@ namespace GameCore
 
         private void Awake()
         {
+            _health = new Health();
+            _health.SetHealth(_maxHealth);
+            _currentSpeed = _moveSpeed;
+        }
+
+        private void Start()
+        {
             _transform = transform;
             _camera = CameraControllerV2.Instance;
             _camera.StartFollowingObject(transform);
@@ -104,15 +114,21 @@ namespace GameCore
             _interactionSphereCollider.radius = _interactionRadius;
 
             _moveAction = InputSystem.actions.FindAction(InputActionConstants.DirectionalMove);
-            _jumpAction = InputSystem.actions.FindAction(InputActionConstants.Space);
-            _interactAction = InputSystem.actions.FindAction(InputActionConstants.InteractKey);
-            _escapeAction = InputSystem.actions.FindAction(InputActionConstants.Escape);
-            _escapeAction.started -= LoadMainMenu;
-            _escapeAction.started += LoadMainMenu;
 
+            _jumpAction = InputSystem.actions.FindAction(InputActionConstants.Space);
             _jumpAction.performed += Jump;
+
+            _sprintAction = InputSystem.actions.FindAction(InputActionConstants.Sprint);
+            _sprintAction.performed += ctx => EnableSprint();
+            _sprintAction.canceled += ctx => DisableSprint();
+
+            _interactAction = InputSystem.actions.FindAction(InputActionConstants.InteractKey);
             _interactAction.started += ctx => StartInteraction();
             _interactAction.canceled += ctx => StopInteraction();
+
+            _dragAction = InputSystem.actions.FindAction(InputActionConstants.RMB);
+            _dragAction.started += ctx => StartInteraction();
+            _dragAction.canceled += ctx => StopInteraction();
 
             _shootAction = InputSystem.actions.FindAction(InputActionConstants.LMB);
             _shootAction.started += ctx => StartShooting();
@@ -125,29 +141,25 @@ namespace GameCore
                 return;
             }
 
-            _health = new Health();
-            _health.SetHealth(_maxHealth);
-
             DisableAllBodyParts();
             SetHappyState(0);
             UpdateInteractionPrompt(false);
 
-            CursorService.Instance.SetCursorType(CursorService.CursorType.DEFEND, CursorLockMode.Locked);
-        }
+            CursorService.Instance?.SetCursorType(CursorService.CursorType.DEFEND, CursorLockMode.Locked);
 
-        private void OnEnable()
-        {
-            _rigidBody.position = _playerSpawnPoint.position;
+            ResetPosition();
         }
 
         private void OnDestroy()
         {
-            _escapeAction.started -= LoadMainMenu;
             _jumpAction.performed -= Jump;
             _interactAction.started -= ctx => StartInteraction();
             _interactAction.canceled -= ctx => StopInteraction();
             _shootAction.started -= ctx => StartShooting();
             _shootAction.canceled -= ctx => StopShooting();
+            _sprintAction.performed -= ctx => EnableSprint();
+            _sprintAction.canceled -= ctx => DisableSprint();
+
         }
 
         private void Update()
@@ -331,9 +343,9 @@ namespace GameCore
             Vector3 moveDirection = camForward * moveInput.y + camRight * moveInput.x;
             moveDirection.Normalize();
 
-            Vector3 targetVel = moveDirection * _moveSpeed;
+            Vector3 targetVel = moveDirection * _currentSpeed;
 
-            _rigidBody.MovePosition(_rigidBody.position + targetVel * _moveSpeed * Time.fixedDeltaTime);
+            _rigidBody.MovePosition(_rigidBody.position + targetVel * _currentSpeed * Time.fixedDeltaTime);
 
             // Rotation is handled by the camera, so we just need to ensure the rigidbody's rotation matches the transform's rotation
             if (_inputDirection != Vector3.zero)
@@ -453,11 +465,14 @@ namespace GameCore
             _isShooting = false;
         }
 
-        private void LoadMainMenu(InputAction.CallbackContext context)
+        private void EnableSprint()
         {
-            _escapeAction.started -= LoadMainMenu;
-            CursorService.Instance.SetCursorType(CursorService.CursorType.MAIN, CursorLockMode.None);
-            PlayerProgressService.Instance.ExitToMenu();
+            _currentSpeed = _sprintSpeed;
+        }
+
+        private void DisableSprint()
+        {
+            _currentSpeed = _moveSpeed;
         }
 
         #endregion
