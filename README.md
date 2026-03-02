@@ -1,6 +1,9 @@
 # Rebooting Patch
 A game attempt for the Game Dev Group Game Jam 2026 Volume 1.
 
+### Warning! Prototype, fast, non-production code inside!
+
+# Screenshots
 
 <img width="256" height="256" alt="rebootingpatch_cover" src="https://github.com/user-attachments/assets/df5aacfb-f37e-4e79-98cc-a0d3328378e1" />
 <img width="256" height="256" alt="Screenshot_134168684784356703" src="https://github.com/user-attachments/assets/1a78d1d8-1230-4cbd-81b5-ed6262888afb" />
